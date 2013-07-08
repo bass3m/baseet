@@ -21,12 +21,12 @@
     (.stop @svr)
     (println "Stopping Web Server")))
 
-;(defrecord WebServer [svr]
-  ;life/Lifecycle
-  ;(start [_] (start svr))
-  ;(stop [_] (stop svr)))
+(defrecord WebServer [svr]
+  life/Lifecycle
+  (start [_] (start svr))
+  (stop [_] (stop svr)))
 
-;(defn web-server-init [config]
-  ;(->WebServer (atom #(jetty/run-jetty
-                        ;(-> config routes/app handler/api)
-                        ;{:port (:port config) :join? false}))))
+(defn web-server-init [config]
+  (->WebServer (atom #(jetty/run-jetty
+                        (-> config routes/app handler/api)
+                        {:port (-> config :server-params :port) :join? false}))))

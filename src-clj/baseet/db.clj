@@ -1,5 +1,6 @@
 (ns baseet.db
-  (:require [baseet.lifecycle :as life :only (Lifecycle)]))
+   (:require [com.ashafa.clutch :as db]
+             [baseet.lifecycle :as life :only (Lifecycle)]))
 
 (defn start
   [db-params]
@@ -17,23 +18,34 @@
   (start [_] (start db-params))
   (stop [_] (stop db-params)))
 
-;; should do more, but this is just a placeholder
-(defn db-store-init [config]
-  (->DbStore config))
+(defmulti couch-views :view-name)
 
+(defmethod couch-views :tw-list-view
+  [_]
+  (db/view-server-fns :cljs {:twl {:map (fn [doc] (js/emit (aget doc "_id") 3))}}))
 
-;(defn create-db-store [db-params]
-  ;(ref db-params))
+(defmethod couch-views :tweet-view
+  [_]
+  (db/view-server-fns :cljs {:tweets {:map (fn [doc] (js/emit (aget doc "_id") 4))}}))
 
-;; perhaps this should be moved
-;(defrecord DocDatabase [store]
-  ;(get-db-name [_])
-  ;(get-)
-  ;)
+(defmulti db-store-init :db-type)
 
-;(defrecord CouchDocDatabse
-  ;DocDatabase
-  ;)
+(defn make-view [db-name design-doc-name]
+  (partial db/save-view db-name design-doc-name))
 
-;(defn get-db-name []
-  ;())
+(defmethod db-store-init :couch
+  [db-cfg]
+  "CouchDB specific initialization. First check if db is configured,
+  if not then create it and initialize the views"
+  (let [db-name (:db-name db-cfg)]
+    (when (nil? (db/database-info db-name))
+      (println "Name:" db-name "db-cfg:" db-cfg)
+      (db/get-database db-name)
+      ;; this should map over the views
+      ((make-view db-name (:design-doc-name db-cfg)) (couch-views db-cfg)))
+    (->DbStore db-cfg)))
+
+(defmethod db-store-init :default
+  [db-cfg]
+  "No init needed, just keep the db cfg that are given"
+  (->DbStore db-cfg))

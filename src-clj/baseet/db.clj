@@ -18,9 +18,7 @@
   (start [_] (start db-params))
   (stop [_] (stop db-params)))
 
-(defmulti couch-views
-  (fn [v]
-  (keyword (:view-name v))))
+(defmulti couch-views keyword)
 
 (defmethod couch-views :tw-list-view
   [_]
@@ -48,22 +46,18 @@
 
 (defmulti db-store-init :db-type)
 
-(defn make-view [db-name design-doc-name]
-  (partial db/save-view db-name design-doc-name))
-
 (defmethod db-store-init :couch
   [db-cfg]
   "CouchDB specific initialization. First check if db is configured,
   if not then create it and initialize the views"
   (clojure.pprint/pprint db-cfg)
-  (let [db-name (:db-name db-cfg)
-        design-doc (:design-doc-name db-cfg)]
+  (let [db-name (:db-name db-cfg)]
     (when (nil? (db/database-info db-name))
       (db/get-database db-name)
       (doall  ;; needed due to map's laziness
-        (map #((make-view db-name (:view-name %)) (couch-views %))
+        (map (comp #((partial db/save-view db-name %) (couch-views %))
+                   :view-name val)
              (:views db-cfg))))
-      ;((make-view db-name (:design-doc-name db-cfg)) (couch-views db-cfg)))
     (->DbStore db-cfg)))
 
 (defmethod db-store-init :default

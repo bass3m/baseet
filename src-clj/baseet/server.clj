@@ -8,9 +8,12 @@
   "Start our web server"
   [svr]
   (try
-    (.stop @svr)
-    (catch IllegalArgumentException _ nil)
-    (finally
+    (if (.isStopped @svr)
+      (do
+        (.start @svr)
+        (println "ReStarting Web Server"))
+      (println "Web Server already started. Stop it first."))
+    (catch IllegalArgumentException _
       (when-let [run-server (@svr)]
         (reset! svr run-server)
         (println "Starting Web Server")))))

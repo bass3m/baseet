@@ -6,7 +6,7 @@
   (read-string (slurp "twitter-cfg.txt")))
 
 (defrecord DefaultCfg [cfg-file server-params db-params])
-(defrecord DefaultDbParams [db-type db-name design-doc-name view-name])
+(defrecord DefaultDbParams [db-type db-name design-doc-name views])
 (defrecord DefaultServerParams [port])
 
 (defn default-server-params []
@@ -16,7 +16,8 @@
   (map->DefaultDbParams {:db-type :couch
                          :db-name "tw-db"
                          :design-doc-name "tw-design-doc"
-                         :view-name :tw-list-view}))
+                         :views [{:view-name "tw-list-view"}
+                                 {:view-name "tweet-activity-view"}]}))
 
 (defn default-cfg []
   (map->DefaultCfg {:cfg-file "baseet-cfg.txt"

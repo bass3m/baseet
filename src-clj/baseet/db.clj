@@ -18,15 +18,33 @@
   (start [_] (start db-params))
   (stop [_] (stop db-params)))
 
-(defmulti couch-views :view-name)
+(defmulti couch-views
+  (fn [v]
+  (keyword (:view-name v))))
 
 (defmethod couch-views :tw-list-view
   [_]
-  (db/view-server-fns :cljs {:twl {:map (fn [doc] (js/emit (aget doc "_id") 3))}}))
+  (db/view-server-fns
+    :cljs {:tw-list-view
+           {:map
+            (fn [doc]
+              (if (= (aget doc "schema") "tw-list")
+                (let [list-id (aget doc "list-id")
+                      last-update-time (aget doc "last-update-time")
+                      since-id (aget doc "since-id")
+                      list-name (aget doc "name")]
+                  (js/emit list-id
+                           (array list-id last-update-time since-id list-name)))))}}))
 
-(defmethod couch-views :tweet-view
+(defmethod couch-views :tweet-activity-view
   [_]
-  (db/view-server-fns :cljs {:tweets {:map (fn [doc] (js/emit (aget doc "_id") 4))}}))
+  (db/view-server-fns
+    :cljs {:tweet-activity-view
+           {:map
+            (fn [doc]
+              (if (= (aget doc "schema") "tweet")
+                (js/emit (aget doc "_id")
+                         (aget doc "last-activity"))))}}))
 
 (defmulti db-store-init :db-type)
 
@@ -37,12 +55,15 @@
   [db-cfg]
   "CouchDB specific initialization. First check if db is configured,
   if not then create it and initialize the views"
-  (let [db-name (:db-name db-cfg)]
+  (clojure.pprint/pprint db-cfg)
+  (let [db-name (:db-name db-cfg)
+        design-doc (:design-doc-name db-cfg)]
     (when (nil? (db/database-info db-name))
-      (println "Name:" db-name "db-cfg:" db-cfg)
       (db/get-database db-name)
-      ;; this should map over the views
-      ((make-view db-name (:design-doc-name db-cfg)) (couch-views db-cfg)))
+      (doall  ;; needed due to map's laziness
+        (map #((make-view db-name (:view-name %)) (couch-views %))
+             (:views db-cfg))))
+      ;((make-view db-name (:design-doc-name db-cfg)) (couch-views db-cfg)))
     (->DbStore db-cfg)))
 
 (defmethod db-store-init :default

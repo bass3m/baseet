@@ -41,8 +41,10 @@
            {:map
             (fn [doc]
               (if (= (aget doc "schema") "tweet")
-                (js/emit (aget doc "_id")
-                         (aget doc "last-activity"))))}}))
+                (let [list-id (aget doc "list-id")
+                      last-activity (aget doc "last-activity")]
+                  (js/emit rev
+                           (array list-id last-activity)))))}}))
 
 (defmulti db-store-init :db-type)
 

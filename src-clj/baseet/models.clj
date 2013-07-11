@@ -76,8 +76,26 @@
           (coerce/from-string tweet-activity-view))))
 
 ;; really need to refactor the view stuff XXX
-(defn age-tweets
-  "Get rid of old tweets from db."
+;(defn age-tweets
+  ;"Get rid of old tweets from db."
+  ;[db-params]
+  ;(let [db-name (:db-name db-params)
+        ;db-tw-activity-view (-> (:db-name db-params)
+                                ;(db/get-view
+                                  ;(-> db-params :views :tweets :view-name)
+                                  ;(-> db-params :views :tweets :view-name keyword)))]
+    ;(if-let [old-tweets (and (seq db-tw-activity-view)
+                             ;(seq (filter too-old? db-tw-activity-view)))]
+      ;(db/bulk-update db-name
+                      ;(map #(as-> % _
+                              ;(assoc _ :_rev (:key _))
+                              ;(assoc _ :_id (:id _))
+                              ;(assoc _ :_deleted true))
+                           ;old-tweets)))))
+
+(defn mark-old-tweets-for-deletion
+  "Get rid of old tweets from db. The tweet view return the timestamp
+  in the second item in the value array"
   [db-params]
   (let [db-name (:db-name db-params)
         db-tw-activity-view (-> (:db-name db-params)
@@ -85,13 +103,42 @@
                                   (-> db-params :views :tweets :view-name)
                                   (-> db-params :views :tweets :view-name keyword)))]
     (if-let [old-tweets (and (seq db-tw-activity-view)
-                             (seq (filter too-old? db-tw-activity-view)))]
-      (db/bulk-update db-name
-                      (map #(as-> % _
-                              (assoc _ :_rev (:key _))
-                              (assoc _ :_id (:id _))
-                              (assoc _ :_deleted true))
-                           old-tweets)))))
+                             (seq (filter (comp too-old? (comp second :value))
+                                          db-tw-activity-view)))]
+      (map #(as-> % _
+              (assoc _ :_rev (:key _))
+              (assoc _ :_id (:id _))
+              (assoc _ :_deleted true)) old-tweets))))
+
+(defn update-db-since-id!
+  "Side effects a-plenty. First get the list view from db containing the
+  latest since-id. Get tweets since the since-id. Update db entry with
+  the id obtained from the view query. Finally return the new tweets."
+  [db-params list-id]
+  (let [db-name (:db-name db-params)
+        db-tw-lists-view (-> db-name
+                             (db/get-view
+                               (-> db-params :views :twitter-list :view-name)
+                               (-> db-params :views :twitter-list :view-name keyword)
+                               {:key (Integer. list-id)}))]
+    (when (seq db-tw-lists-view)
+      (let [doc-id (:id (first db-tw-lists-view))
+            since-id (-> db-tw-lists-view first :value (nth 2))
+            tweets (->> {:list-id list-id :since-id since-id}
+                        (suweet/get-twitter-list-tweets my-creds))]
+        (db/update-document db-name
+                            (db/get-document db-name doc-id)
+                            assoc :since-id (:since-id tweets))
+        tweets))))
+
+(defn tweet-db-housekeep!
+  [db-params list-id]
+  (->> db-params
+       mark-old-tweets-for-deletion
+       (apply conj (->> list-id
+                        (update-db-since-id! db-params)
+                        (score-tweets list-id)))
+       (db/bulk-update (:db-name db-params))))
 
 (defn a-twitter-list
   "Get tweets from a twitter list identied by the list id.

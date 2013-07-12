@@ -1,5 +1,7 @@
 (ns baseet.server
   (:require [ring.adapter.jetty :as jetty :only (run-jetty)]
+            [ring.middleware.resource :as ring-resource]
+            [ring.middleware.file-info :as ring-file-info]
             [compojure.handler :as handler :only (api site)]
             [baseet.lifecycle :as life :only (Lifecycle)]
             [baseet.routes :as routes :only (app)]))
@@ -31,5 +33,9 @@
 
 (defn web-server-init [config]
   (->WebServer (atom #(jetty/run-jetty
-                        (-> config routes/app handler/api)
+                        (-> config 
+                            routes/app 
+                            (ring-resource/wrap-resource "public")
+                            (ring-file-info/wrap-file-info)
+                            handler/api)
                         {:port (-> config :server-params :port) :join? false}))))

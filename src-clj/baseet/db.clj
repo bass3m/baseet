@@ -34,6 +34,16 @@
                   (js/emit list-id
                            (array list-id last-update-time since-id list-name)))))}}))
 
+(defmethod couch-views :by-list
+  [_]
+  (db/view-server-fns
+    :cljs {:by-list
+           {:map
+            (fn [doc]
+              (if (= (aget doc "schema") "tweet")
+                (let [list-id (aget doc "list-id")]
+                  (js/emit list-id doc))))}}))
+
 (defmethod couch-views :tweet-activity-view
   [_]
   (db/view-server-fns

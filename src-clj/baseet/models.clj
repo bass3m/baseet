@@ -50,7 +50,7 @@
                             {(str view-name "-tweets")
                              {:map (str "function(doc) {if(doc['schema'] == 'tweet' &&"
                                         " doc['list-id'] == " list-id " )"
-                                        "emit(doc['score'],doc['list-id']);}")}}]))
+                                        "emit(doc['score'],doc);}")}}]))
 
 (defn update-twitter-list-views
   "Create view for each of our twitter lists. This should help
@@ -78,7 +78,6 @@
         (->> latest-tw-lists
              (update-twitter-list-views db-name)
              (db/bulk-update db-name))
-        ;(as-> latest-tw-lists _ (db/bulk-update db-name _) _)
         (map (juxt :name :list-id) latest-tw-lists))
       (map (comp (juxt #(nth % 3) first) :value) db-tw-lists-view))))
 
@@ -101,19 +100,20 @@
           (coerce/from-string tweet-activity-view))))
 
 (defn mark-old-tweets-for-deletion
-  "Get rid of old tweets from db. The tweet view return the timestamp
-  in the second item in the value array"
-  [db-params]
+  "Get rid of old tweets from db. Use the by-list view in order to
+  get all the tweets from a given list"
+  [db-params list-id]
   (let [db-name (:db-name db-params)
         db-tw-activity-view (-> (:db-name db-params)
                                 (db/get-view
                                   (-> db-params :views :tweets :view-name)
-                                  (-> db-params :views :tweets :view-name keyword)))]
+                                  (-> db-params :views :tweets :view-name keyword)
+                                  {:key (str list-id)}))]
     (if-let [old-tweets (and (seq db-tw-activity-view)
-                             (seq (filter (comp too-old? (comp second :value))
+                             (seq (filter (comp too-old? (comp :last-activity :value))
                                           db-tw-activity-view)))]
       (map #(as-> % _
-              (assoc _ :_rev (:key _))
+              (assoc _ :_rev (-> _ :value :_rev))
               (assoc _ :_id (:id _))
               (assoc _ :_deleted true)) old-tweets))))
 
@@ -140,7 +140,7 @@
 
 (defn tweet-db-housekeep!
   [db-params list-id]
-  (apply conj (mark-old-tweets-for-deletion db-params)
+  (apply merge (mark-old-tweets-for-deletion db-params list-id)
          (->> list-id
               (update-db-since-id! db-params)
               (score-tweets list-id))))
@@ -152,25 +152,13 @@
   Return top 10 tweets for the list sorted by calculated score"
   [{option :option {id :id list-name :list-name} :list-req} ctx]
   (let [db-name (-> ctx :db-params :db-name)]
-    (->> id
+    (some->> id
          (tweet-db-housekeep! (:db-params ctx))
          (db/bulk-update db-name))
     (-> db-name
         (db/get-view list-name (str list-name "-tweets") {:descending true
                                                           :include_docs true
                                                           :limit 10}))))
-
-;; i guess i could've just created a view which emitted the list-id
-;; as key.
-  ;(tweet-db-housekeep! (:db-params ctx) id)
-            ;(map (juxt :id (comp first (partial into []) :urlers))
-                 ;(:links tweets))))
-      ;id)))
-        ;db-tw-lists-view (-> db-name
-        ;(do (->> tweets (score-tweets id) (db/bulk-update db-name))
-            ;(map (juxt :id (comp first (partial into []) :urlers))
-                 ;(:links tweets))))
-      ;id)))
 
 ;(defn get-url-summary [tw-id]
   ;)

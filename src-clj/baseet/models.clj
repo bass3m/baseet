@@ -130,20 +130,24 @@
                                {:key (Integer. list-id)}))]
     (when (seq db-tw-lists-view)
       (let [doc-id (:id (first db-tw-lists-view))
-            since-id (-> db-tw-lists-view first :value (nth 2))
+            since-id (:since-id (db/get-document db-name doc-id))
+            ;since-id (-> db-tw-lists-view first :value (nth 2))
             tweets (->> {:list-id list-id :since-id since-id}
                         (suweet/get-twitter-list-tweets my-creds))]
-        (db/update-document db-name
-                            (db/get-document db-name doc-id)
-                            assoc :since-id (:since-id tweets))
-        tweets))))
+        (when (> (:since-id tweets) since-id)
+          (db/update-document db-name
+                              (db/get-document db-name doc-id)
+                              assoc :since-id (:since-id tweets))
+          tweets)))))
 
 (defn tweet-db-housekeep!
   [db-params list-id]
-  (apply merge (mark-old-tweets-for-deletion db-params list-id)
-         (->> list-id
-              (update-db-since-id! db-params)
-              (score-tweets list-id))))
+  (let [old-tweets (mark-old-tweets-for-deletion db-params list-id)]
+    (if-let [new-tweets (some->> list-id
+                                 (update-db-since-id! db-params)
+                                 (score-tweets list-id))]
+      (apply conj old-tweets new-tweets)
+      old-tweets)))
 
 ;; make the 10 limit configurable
 (defn a-twitter-list

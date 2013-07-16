@@ -5,7 +5,8 @@
 (defn render-tw-list
   [tw-list]
   [:div.tw-list 
-   [:a  {:href "#" :data-list-id (second tw-list)} (str (first tw-list))]])
+   [:a  {:href (str "/list/" (second tw-list) "/" (first tw-list)) 
+         :data-list-id (second tw-list)} (str (first tw-list))]])
 
 (defn all-twitter-lists
   "Return a map containing user's twitter lists (list name and id)"
@@ -25,6 +26,7 @@
       [:div.span10 [:div.well {:style (str "margin-top:5%;" "text-align:center;")}
                     [:h4 "My Twitter Lists"]
                     [:p "Select a list to view the highest scoring tweets"]]]]]
+    (include-js "/js/main.js")
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
 (defn render-tweet
@@ -47,7 +49,8 @@
     [:div.container-fluid
      [:div.row-fluid [:div.span3 [:h4 "Tw Lists"]]]
      [:ul.unstyled (map (comp render-tweet :value) request)]]
-     (include-js "/bootstrap/js/bootstrap.min.js")))
+     (include-js "/js/main.js")
+     (include-js "/bootstrap/js/bootstrap.min.js")))  
 
 ;(defn get-url-summary [tw-id]
   ;)

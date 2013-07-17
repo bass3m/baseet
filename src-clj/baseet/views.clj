@@ -4,9 +4,10 @@
 
 (defn render-tw-list
   [tw-list]
+  (let [list-name (first tw-list)
+        list-id (second tw-list)]
   [:div.tw-list 
-   [:a  {:href (str "/list/" (second tw-list) "/" (first tw-list)) 
-         :data-list-id (second tw-list)} (str (first tw-list))]])
+   [:a {:href "#tw-list" :data-list-name list-name :data-list-id list-id} (str list-name)]]))
 
 (defn all-twitter-lists
   "Return a map containing user's twitter lists (list name and id)"
@@ -27,6 +28,7 @@
                     [:h4 "My Twitter Lists"]
                     [:p "Select a list to view the highest scoring tweets"]]]]]
     (include-js "/js/main.js")
+    [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
 (defn render-tweet

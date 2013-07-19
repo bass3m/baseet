@@ -16,7 +16,7 @@
   (map->DefaultDbParams {:db-type :couch
                          :db-name "tw-db"
                          :views {:twitter-list {:view-name "tw-list-view" :keys []}
-                                 :tweets       {:view-name "tweet-activity-view"}}}))
+                                 :tweets       {:view-name "by-list"}}}))
 
 (defn default-cfg []
   (map->DefaultCfg {:cfg-file "baseet-cfg.txt"

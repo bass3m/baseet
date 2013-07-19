@@ -27,12 +27,8 @@
            {:map
             (fn [doc]
               (if (= (aget doc "schema") "tw-list")
-                (let [list-id (aget doc "list-id")
-                      last-update-time (aget doc "last-update-time")
-                      since-id (aget doc "since-id")
-                      list-name (aget doc "name")]
-                  (js/emit list-id
-                           (array list-id last-update-time since-id list-name)))))}}))
+                (let [list-id (aget doc "list-id")]
+                  (js/emit list-id doc))))}}))
 
 (defmethod couch-views :by-list
   [_]

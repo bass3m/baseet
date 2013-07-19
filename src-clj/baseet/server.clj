@@ -36,6 +36,6 @@
                         (-> config 
                             routes/app 
                             (ring-resource/wrap-resource "public")
-                            (ring-file-info/wrap-file-info)
+                            (ring-file-info/wrap-file-info) ;; do i need this XXX
                             handler/api)
                         {:port (-> config :server-params :port) :join? false}))))

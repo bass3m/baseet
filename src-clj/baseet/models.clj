@@ -17,17 +17,17 @@
   (suweet/make-twitter-creds app-consumer-key app-consumer-secret
                              access-token-key access-token-secret))
 
+;; XXX move this somwehere else ??
 (def my-creds (twitter-creds (cfg/get-twitter-cfg)))
 
 (defn needs-update?
   "Should update out twitter lists once a day. The view returns with a map
-   with value of a 2 element array containing the list-id followed by
-  last-update-time"
-  [tw-lists]
+   with value containing last-update-time"
+  [tw-list-views]
   (some #((complement clj-time/within?)
           (clj-time/interval (-> 1 clj-time/days clj-time/ago) (clj-time/now))
-          (coerce/from-string (second (:value %))))
-        tw-lists))
+          (coerce/from-string (-> % :value :last-update-time)))
+        tw-list-views))
 
 (defn build-tw-list-doc
   "Construct the twitter list documents. Add timestamp as well"
@@ -52,7 +52,7 @@
                                         " doc['list-id'] == " list-id " )"
                                         "emit(doc['score'],doc);}")}}]))
 
-(defn update-twitter-list-views
+(defn create-twitter-list-views
   "Create view for each of our twitter lists. This should help
   make our queries a lot quicker than getting all our documents"
   [db-name tw-lists]
@@ -61,6 +61,40 @@
                  (create-tw-list-design-doc db-name doc-id view-name list-id))
                (juxt (constantly db-name) :name :name :list-id)) tw-lists))
   tw-lists)
+
+(defn get-from
+  "Similar to some. Except that it returns the item matching.
+  getter is a function used to get the item"
+  [coll getter item]
+  (when (seq coll)
+    (if (= (getter (first coll)) item)
+      (first coll)
+      (recur (next coll) getter item))))
+
+(defn update-db-tw-lists!
+  "Side-effects of updating db. This function assumes that we have
+  existing entries that need to be updated because of age. There is
+  also the possibility of the addition of new lists that we haven't been
+  tracking before"
+  [db-name existing-lists latest-lists]
+  (reduce (fn [updates new-list]
+            (if-let [existing-list (get-from existing-lists
+                                             (comp :list-id :value)
+                                             (:list-id new-list))]
+              ;; an exiting twitter list, just update the timestamp
+              (conj updates (as-> (:value existing-list) _
+                              (assoc _ :last-update-time (str (clj-time.core/now)))
+                              (assoc _ :_rev (:_rev _))
+                              (assoc _ :_id (:_id _))))
+              ;; else, this is a new twitter list. create view and entry
+              (do
+                (create-tw-list-design-doc db-name
+                                           (:name new-list)
+                                           (:name new-list)
+                                           (:list-id new-list))
+                (db/put-document db-name new-list)
+                updates)))
+          [] latest-lists))
 
 (defn all-twitter-lists
   "Return a map containing user's twitter lists (list name and id)
@@ -71,15 +105,22 @@
                              (db/get-view
                                (-> ctx :db-params :views :twitter-list :view-name)
                                (-> ctx :db-params :views :twitter-list :view-name keyword)))]
-    (if (or (empty? db-tw-lists-view)
-            (needs-update? db-tw-lists-view))
-      (let [latest-tw-lists (build-tw-list-doc
-                               (suweet/get-twitter-lists my-creds)) ]
-        (->> latest-tw-lists
-             (update-twitter-list-views db-name)
-             (db/bulk-update db-name))
-        (map (juxt :name :list-id) latest-tw-lists))
-      (map (comp (juxt #(nth % 3) first) :value) db-tw-lists-view))))
+    (cond
+      (empty? db-tw-lists-view)
+        (let [latest-tw-lists (build-tw-list-doc
+                                (suweet/get-twitter-lists my-creds))]
+          (->> latest-tw-lists
+               (create-twitter-list-views db-name)
+               (db/bulk-update db-name))
+          (map (juxt :name :list-id) latest-tw-lists))
+      (needs-update? db-tw-lists-view)
+        (let [latest-tw-lists (build-tw-list-doc
+                                (suweet/get-twitter-lists my-creds))]
+          (as-> db-name _
+              (update-db-tw-lists! _ db-tw-lists-view latest-tw-lists)
+              (db/bulk-update db-name _))
+          (map (juxt :name :list-id) latest-tw-lists))
+      :else (map (comp (juxt :name :list-id) :value) db-tw-lists-view))))
 
 (defn score-tweets
   "Score our tweets and save them in db"
@@ -131,7 +172,6 @@
     (when (seq db-tw-lists-view)
       (let [doc-id (:id (first db-tw-lists-view))
             since-id (:since-id (db/get-document db-name doc-id))
-            ;since-id (-> db-tw-lists-view first :value (nth 2))
             tweets (->> {:list-id list-id :since-id since-id}
                         (suweet/get-twitter-list-tweets my-creds))]
         (when (> (:since-id tweets) since-id)
@@ -159,10 +199,11 @@
     (some->> id
          (tweet-db-housekeep! (:db-params ctx))
          (db/bulk-update db-name))
-    (-> db-name
-        (db/get-view list-name (str list-name "-tweets") {:descending true
-                                                          :include_docs true
-                                                          :limit 10}))))
+    (as-> db-name _
+        (db/get-view _ list-name (str list-name "-tweets") {:descending true
+                                                            :include_docs true
+                                                            :limit 10})
+        (map #(assoc % :list-name list-name) _))))
 
 ;(defn get-url-summary [tw-id]
   ;)

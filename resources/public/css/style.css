@@ -1,0 +1,404 @@
+@font-face {
+    font-family: 'geogrotesque_mdmedium';
+    src: url('../fonts/geogtq-md-webfont.eot');
+    src: url('../fonts/geogtq-md-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/geogtq-md-webfont.woff') format('woff'),
+         url('../fonts/geogtq-md-webfont.ttf') format('truetype'),
+         url('../fonts/geogtq-md-webfont.svg#geogrotesque_mdmedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+html,
+button,
+input,
+select,
+textarea {
+    color: #039;
+}
+body {
+    font-family: "geogrotesque_mdmedium", Helvetica, Arial, sans-serif;*/
+    font-size: 1em;
+    line-height: 1.4;
+    margin-left: 0;
+    padding-left: 0;
+    margin: auto;
+    background-attachment: fixed;
+    margin: auto;
+    background-size: cover;
+}
+#main_page {
+    background-image:url(../img/onion_bw-3.jpg); 
+}
+.content {
+    padding: 15px 30px 20px;
+    float:left;
+    margin-left: 22%;
+    background-color: #c9c9c9;
+    width: 55%;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+form {
+    width: 36%;
+    border: 1px solid #666; 
+    border-radius: 7px;
+    box-shadow: .2em .2em .5em #999;
+    background-color:#d0e9f6; 
+    padding: 0.6em;
+    overflow: hidden;
+    float: right;
+    margin-top: 20px;
+}
+form input#subscriber_email {
+  float: left;
+  margin-top: 5px;
+  width: 85px;
+  height: 15px;
+}
+form input#email_delivery_time {
+  margin-top: 5px;
+  width: 80px;
+}
+label {
+    display: block; 
+    float: left;
+    width: 10em; 
+    text-align: right; 
+    margin-right: .5em; 
+    color: #04699d;
+}
+#segment_id {
+    width: 10em;
+    height: 2em;
+    border: 1px solid #666;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: .875em;
+}
+input[type="submit"] { 
+    display: block;
+    /*width: 7em;*/
+    /*height: 2em;*/
+    float: right;
+    background: white;
+    font-size: inherit;
+    border: 1px solid #04699d; 
+    border-radius: 4px;
+    box-shadow: 2px 2px 3px rgba(0,0,0,.5);
+    margin-left: 0px;
+    /*margin-right: 1em;*/
+    color: #C00; /* the submit button text is attention-getting red */
+}
+
+/*------------------
+Navigation
+------------------*/
+nav ul li {
+    display: inline;
+    list-style-type: none;
+}
+#site_nav ul li a {
+    text-decoration: none;
+}
+#site_nav {
+    font-family: "geogrotesque_mdmedium", Helvetica, Arial, sans-serif;
+    font-size: 1.15em; 
+    text-transform: uppercase;
+    /*color: #fff;*/
+    color:#039;    
+    text-align: center;    
+    padding-left: 1em; /* nav menu fudge for centering items - tricky cos menu items are different widths */ 
+    
+}
+#site_nav li {
+    display: inline;
+    margin: 0 1.5em;
+    padding: 0 2px;
+    vertical-align: middle;
+}
+#site_nav .home {
+    margin-bottom: -25px;
+}
+#site_nav .home img {
+    display: block;
+}
+#site_nav a {
+    display: inline-block;
+    padding-bottom: 3px;
+    color:#039;
+    text-decoration: none;   
+    border-bottom: 3px solid transparent;    
+    -webkit-transition: border 0.2s ease-in-out;  
+    -moz-transition: border 0.2s ease-in-out;  
+    -o-transition: border 0.2s ease-in-out;  
+    transition: border 0.2s ease-in-out;
+}
+#site_nav .current a,
+#site_nav a:hover,
+.about #site_nav .about a,
+.rides #site_nav .rides a,
+.content #site_nav .content a,
+.news #site_nav .news a,
+.personal #site_nav .personal a {
+    border-bottom: 3px solid #039;
+}
+#site_nav .home .current a,
+#site_nav .home a:hover {
+    border-bottom-color: transparent;
+}
+
+#main_page #site_nav .current a,
+#main_page #site_nav a:hover,
+#main_page .about #site_nav .about a,
+#main_page .rides #site_nav .rides a,
+#main_page .content #site_nav .content a,
+#main_page .news #site_nav .news a,
+#main_page .personal #site_nav .personal a {
+    border-bottom: 3px solid white;
+}
+#main_page #site_nav .home .current a,
+#main_page #site_nav .home a:hover {
+    border-bottom-color: transparent;
+}
+
+/* mapping */
+#map {
+    height: 480px;
+    width: 60%;
+    border: 1px solid #ccc;
+    border-color: #999;
+    margin: 1.5em 0.3em;
+    float: left;
+}
+#map:focus {
+    border-color: #999;
+}
+.subscriptions .sub img {
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+  float: left;
+  margin-right: 10px;
+}
+
+.subscriptions .sub {
+    overflow:hidden;
+    background: #ddd;
+    border-radius:4px;
+    /*padding:12px;*/
+    /*margin-bottom:3px;*/
+    padding: 10px 20px 10px 9px;
+    width: 35%;
+    margin: 1.2em 0em 0em 0em;
+    -moz-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.3);
+    -webkit-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.3);
+    box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.3);
+}
+
+.subscriptions .sub span 
+{
+  text-align: left;
+  display : block;
+  text-overflow: ellipsis;
+  width: 34%;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-top: 5px;
+  float: left;
+  vertical-align: middle;
+}
+/* jquery-ui tabs */
+#tabs {
+    font-family: "geogrotesque_mdmedium", Helvetica, Arial, sans-serif;
+    font-size: .85em;
+    text-transform: uppercase;
+    text-align: center;    
+    /*cool looking text shadow effect*/
+    /*text-shadow: 0px 2px 3px #777;*/
+    /*float : left;*/
+    overflow: hidden;
+}
+
+ /*style our spinner a little */
+.loading {
+    padding-top:10px;
+}
+.loading span {
+    margin-left: 40px;
+    float: left;
+}
+.loading .spinner {
+    position: relative;
+    margin-top: 10px;
+    margin-left: 18px;
+}
+ul li .ui-tabs-panel{
+    text-align: left;    
+    text-transform: uppercase;
+    color: #787871;
+    text-shadow: 1px 1px 1px #fff;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+.ui-tabs-panel span {
+    text-align: right;
+    font-size:  15px;
+    color: #dc692e;
+    display : block;
+    text-overflow: ellipsis;
+    width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+table {
+    border-spacing: 1px;
+    border-color: gray;
+    border:1px solid #E9E9E4;
+    /*border:1px solid #999;*/
+    width:60%;
+    float : left;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 1px -1px 9px #DDD;
+}
+tr td {
+    border:1px solid #dedede;
+}
+tbody tr {
+    border:0px;
+    text-transform:none;
+}
+
+/* Styling for button */
+.button
+{
+    display: inline-block;
+    white-space: nowrap;
+    background-color: #ccc;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ccc));
+    background-image: -webkit-linear-gradient(top, #eee, #ccc);
+    background-image: -moz-linear-gradient(top, #eee, #ccc);
+    background-image: -ms-linear-gradient(top, #eee, #ccc);
+    background-image: -o-linear-gradient(top, #eee, #ccc);
+    background-image: linear-gradient(top, #eee, #ccc);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#eeeeee', EndColorStr='#cccccc');
+    border: 1px solid #777;
+    padding: 0 1.5em;
+    margin: 0.1em;
+    text-decoration: none;
+    color: #333;
+    text-shadow: 0 1px 0 rgba(255,255,255,.8);
+    -moz-border-radius: .2em;
+    -webkit-border-radius: .2em;
+    border-radius: .2em;
+    -moz-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.3);
+    -webkit-box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.3);
+    box-shadow: 0 0 1px 1px rgba(255,255,255,.8) inset, 0 1px 0 rgba(0,0,0,.3);
+}
+a.button.delete
+{
+  float: right;
+  margin: 4px 0px 0px 0px;
+}
+.button:hover
+{
+    background-color: #ddd;        
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#ddd));
+    background-image: -webkit-linear-gradient(top, #fafafa, #ddd);
+    background-image: -moz-linear-gradient(top, #fafafa, #ddd);
+    background-image: -ms-linear-gradient(top, #fafafa, #ddd);
+    background-image: -o-linear-gradient(top, #fafafa, #ddd);
+    background-image: linear-gradient(top, #fafafa, #ddd);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#fafafa', EndColorStr='#dddddd');
+}
+.button:active
+{
+    -moz-box-shadow: 0 0 4px 2px rgba(0,0,0,.3) inset;
+    -webkit-box-shadow: 0 0 4px 2px rgba(0,0,0,.3) inset;
+    box-shadow: 0 0 4px 2px rgba(0,0,0,.3) inset;
+    position: relative;
+    top: 1px;
+}
+
+.button:focus
+{
+    outline: 0;
+    background: #fafafa;
+}    
+
+.button:before
+{
+    background: #ccc;
+    background: rgba(0,0,0,.1);
+    float: left;        
+    width: 0.8em;
+    text-align: center;
+    font-size: 1em;
+    margin: 0 1.4em 0 -1.5em;
+    padding: 0 .5em;
+    -moz-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+    -webkit-box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+    box-shadow: 1px 0 0 rgba(0,0,0,.5), 2px 0 0 rgba(255,255,255,.5);
+    -moz-border-radius: .15em 0 0 .15em;
+    -webkit-border-radius: .15em 0 0 .15em;
+    border-radius: .15em 0 0 .15em;
+    pointer-events: none;
+}
+
+/* Buttons and inputs */
+button.button, input.button 
+{ 
+  cursor: pointer;
+  overflow: visible; /* removes extra side spacing in IE */
+}
+
+/* removes extra inner spacing in Firefox */
+button::-moz-focus-inner 
+{
+  border: 0;
+  padding: 0;
+}
+
+/* If line-height can't be modified, then fix Firefox spacing with padding */
+input::-moz-focus-inner 
+{
+  padding: .4em;
+}
+
+/* The disabled styles */
+.button[disabled], .button[disabled]:hover, .button.disabled, .button.disabled:hover 
+{
+  background: #eee;
+  color: #aaa;
+  border-color: #aaa;
+  cursor: default;
+  text-shadow: none;
+  position: static;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;   
+}
+
+/* Hexadecimal entities for the icons */
+.add:before
+{
+    content: "\271A";
+}
+
+.check:before
+{
+  content: "\2714";
+}
+
+.delete:before
+{
+  content: "\2718";
+}

@@ -75,8 +75,11 @@
        [:div.span2 [:i.icon-user] [:span (:follow-count tweet)]]]
       [:div.span3.text-right [:em (time-ago-in-words (:created-at tweet))]]
       [:p (str (first (:text tweet)))]
-      (if (seq (:url tweet))
-        [:small [:a {:href (:url tweet)} (str (:url tweet))]])]]])
+      (when (seq (:url tweet))
+        [:small 
+         [:button.btn-mini.btn-info {:type "button" :data-id (:_id tweet)} "Summarize"]
+         [:a {:href (:url tweet) :style (str "margin-left:5px;")}
+          (str (:url tweet))]])]]])
 
 (defn a-twitter-list
   "Get tweets from a twitter list identied by the list id.
@@ -88,8 +91,8 @@
     (map (comp render-tweet :value) request)))
 
 
-;(defn get-url-summary [tw-id]
-  ;)
+(defn get-url-summary [request]
+  request)
 
 ;(defn mark-tweet-read [tw-id])
 

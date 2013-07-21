@@ -205,8 +205,11 @@
                                                             :limit 10})
         (map #(assoc % :list-name list-name) _))))
 
-;(defn get-url-summary [tw-id]
-  ;)
+(defn get-url-summary
+  "Summarize the requested tweet. The client sends as an id to the db document"
+  [tw-id ctx]
+  (-> (-> ctx :db-params :db-name)
+      (db/get-document tw-id)))
 
 ;(defn mark-tweet-read [tw-id])
 

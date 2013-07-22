@@ -1,13 +1,28 @@
-# baseet
+#### Baseet
+---
+##### What is it ?
+Baseet is a web app built to utilize my other library **suweet**. It displays my twitter lists and highest scoring tweets from said lists. Also allows me to view a text summary of a url embedded in a tweet.
 
-A Clojure library designed to ... well, that part is up to you.
+The app is my first attempt at using clojurescript, as well as clojure's web stack. Also my first time playing with couchDB. It's been a blast so far.
 
-## Usage
+I built this app using:
 
-FIXME
+- [Jetty](http://www.eclipse.org/jetty/ ) as the web server.
+- [Ring](https://github.com/ring-clojure/ring) Clojure's answer to Python WSGI and Ruby's Rack, provides a nice modular design which can be extended by plugins/middleware.
+- [compojure](https://github.com/weavejester/compojure) for routing
+- [Hiccup](https://github.com/weavejester/hiccup) for templating.
+- [Apache couchDB](http://couchdb.apache.org/) as a database store.
+- [Twitter Bootstrap](http://twitter.github.io/bootstrap/) So much easier ! 
 
-## License
+#### What is suweet ?
+In a nutshell, it's a library that i wrote to help me summarize my insane twitter feed, by assigning each tweet a score based on retweets, favorites etc.. It's able to provide a sorted list of my tweets. Suweet also has the ability to summarize a given url. 
 
-Copyright © 2013 FIXME
+Suweet, uses **Apache Tika**, **Open NLP**, **Snowball Stemmer** and **Luhn's algorithm** to perform the text summarization. 
 
-Distributed under the Eclipse Public License, the same as Clojure.
+More on suweet on github: [Suweet](https://github.com/bass3m/suweet "Suweet on gitbug").
+#### Todo:
+- Add ability to mark tweet as read/unread.
+- mark list as read
+- refresh tweets
+- I want to play around with couchDB's changes API
+- Use [friend](https://github.com/cemerick/friend)

@@ -1,35 +1,43 @@
 (ns baseet.core
-  (:use-macros [dommy.macros :only [sel sel1 by-tag]])
+  (:use-macros [dommy.macros :only [sel sel1]])
   (:require [goog.net.XhrIo :as xhr]
             [goog.events :as events]
             [dommy.core :as dom]
             [dommy.template :as t]
             [dommy.attrs :as attrs]))
 
-;; want to memoize the call to the twitter list tweets ?? XXX
-
 (defn log [& more]
   (binding [*print-fn* #(.log js/console %)]
     (apply pr more)))
 
 (defn handle-summary-response
-  "Handle the summary response back from server"
-  [event]
-  (let [response (.-target event)
-        summary (.getResponseText response)]
-    (log "Summary is:" summary)))
+  "Handle the summary response back from server. Replace the spinner with
+  the content received, toggle the data-summarized attribute."
+  [id event]
+  (let [target (.-target event)
+        summary (.getResponseText target)
+        modal-body (-> js/document
+                       (.getElementById id)
+                       (.getElementsByClassName "modal-body")
+                       (.item 0))
+        url-div (-> modal-body
+                    .-parentNode
+                    .-nextSibling)]
+    (dom/set-html! modal-body summary)
+    (attrs/set-attr! url-div :data-summarized)))
 
 (defn handle-summarize-click
-  "Click handler for a request to summarize a link"
+  "Click handler for a request to summarize a link.
+  the data-summarized boolean attribute acts as a cacheing flag."
   [event]
   (let [target (.-target event)
         tweet-id (attrs/attr target :data-id)
         url (str "summarize/" tweet-id)]
     (.stopPropagation event)
     (.preventDefault event)
-    (log "clicked summarize for id" tweet-id)
-    (log "sibling:" (.-nextSibling target))
-    (xhr/send url handle-summary-response "GET")))
+    (.modal (js/jQuery (str "#" tweet-id)))
+    (when (= "false" (attrs/attr target :data-summarized))
+      (xhr/send url (partial handle-summary-response tweet-id) "GET"))))
 
 (defn handle-tw-list-response
   "Receive tweets back from server, replace our current view. Add click
@@ -39,7 +47,7 @@
         tweets (.getResponseText response)]
     (dom/replace-contents! (sel1 :div.span10) (t/html->nodes tweets))
     (doall
-      (map #(dom/listen! % :click handle-summarize-click) (by-tag :button)))))
+      (map #(dom/listen! % :click handle-summarize-click) (sel :.modal-id)))))
 
 (defn get-twitter-list
   "Send a GET request to our server, requesting the tweets for the list that
@@ -56,7 +64,7 @@
   (let [target (.-target event)]
     (.stopPropagation event)
     (.preventDefault event)
-    (doseq [act (sel :.active)] 
+    (doseq [act (sel :.active)]
       (dom/remove-class! act :active))
     ;; first is our node so our parent is second node
     (-> target dom/ancestor-nodes second (dom/add-class! :active))

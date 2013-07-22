@@ -1,6 +1,6 @@
 (defproject baseet "0.1.0-SNAPSHOT"
-  :description "Frontend for suweet"
-  :url "http://example.com/FIXME"
+  :description "Frontend for ranking and summarizing tweets"
+  :url "https://github.com/bass3m/baseet"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :source-paths ["src-clj"]

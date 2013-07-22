@@ -47,6 +47,7 @@
       [:meta  {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
       (include-css "/bootstrap/css/bootstrap.css")
+      (include-css "/font-awesome/css/font-awesome.min.css")
       (include-css "/css/style.css")
       (include-css "/bootstrap/css/bootstrap-responsive.css")]
     [:body]
@@ -61,9 +62,12 @@
     (include-js "/js/main.js")
     ;; need to find a better way than use harcoded name
     [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]
+    (include-js "http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js")
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
 (defn render-tweet
+  "Tweet template: includes tweet text, url, retweets, etc..
+  Modal consumes most of the markup"
   [tweet]
   [:div.tweet
    [:div.row-fluid
@@ -76,10 +80,27 @@
       [:div.span3.text-right [:em (time-ago-in-words (:created-at tweet))]]
       [:p (str (first (:text tweet)))]
       (when (seq (:url tweet))
-        [:small 
-         [:button.btn-mini.btn-info {:type "button" :data-id (:_id tweet)} "Summarize"]
-         [:a {:href (:url tweet) :style (str "margin-left:5px;")}
-          (str (:url tweet))]])]]])
+        [:small
+         (let [modal-id (:_id tweet)]
+           [:div.modal-id
+           [:div {:id modal-id
+                  :class "modal hide fade" :tabindex "-1"
+                  :role "dialog" :aria-labelledby (str modal-id "Label")
+                  :aria-hidden "true"}
+            [:div.modal-header
+             [:button.close {:type "button" :data-dismiss "modal" :aria-hidden "true"} "x"]
+             [:h4 {:id (str modal-id "Label")} (str "Retrieving summary for :")]
+             [:p (:url tweet)]]
+            [:div.modal-body
+             [:i.icon-spinner.icon-spin.icon-2x]
+             [:p "What a body"]]
+            [:div.modal-footer
+             [:button.btn.btn-small {:data-dismiss "modal" :aria-hidden "true"} "Close"]]]
+           [:a {:href (str "#" modal-id) :class "btn"
+                :role "button" :data-id modal-id  :data-summarized "false"
+                :data-toggle "modal"} "Summarize"]
+           [:a {:href (:url tweet) :style (str "margin-left:5px;")}
+            (str (:url tweet))]])])]]])
 
 (defn a-twitter-list
   "Get tweets from a twitter list identied by the list id.
@@ -91,8 +112,8 @@
     (map (comp render-tweet :value) request)))
 
 
-(defn get-url-summary [request]
-  request)
+(defn get-url-summary [summary-sentences]
+  (html (for [sentence summary-sentences] [:p sentence])))
 
 ;(defn mark-tweet-read [tw-id])
 

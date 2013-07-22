@@ -93,7 +93,7 @@
              [:p (:url tweet)]]
             [:div.modal-body
              [:i.icon-spinner.icon-spin.icon-2x]
-             [:p "What a body"]]
+             [:p "hardly working.."]]
             [:div.modal-footer
              [:button.btn.btn-small {:data-dismiss "modal" :aria-hidden "true"} "Close"]]]
            [:a {:href (str "#" modal-id) :class "btn"

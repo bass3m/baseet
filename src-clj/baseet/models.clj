@@ -50,6 +50,13 @@
                             {(str view-name "-tweets")
                              {:map (str "function(doc) {if(doc['schema'] == 'tweet' &&"
                                         " doc['list-id'] == " list-id " )"
+                                        "emit(doc['score'],doc);}")}}])
+  (db/save-design-document db-name :views (str doc-id "-unread")
+                           ["javascript"
+                            {(str view-name "-unread-tweets")
+                             {:map (str "function(doc) {if(doc['schema'] == 'tweet' &&"
+                                        " doc['list-id'] == " list-id
+                                        "&& doc.unread && doc.unread == true)"
                                         "emit(doc['score'],doc);}")}}]))
 
 (defn create-twitter-list-views
@@ -122,12 +129,13 @@
           (map (juxt :name :list-id) latest-tw-lists))
       :else (map (comp (juxt :name :list-id) :value) db-tw-lists-view))))
 
-(defn score-tweets
+(defn make-tweet-db-doc
   "Score our tweets and save them in db"
   [list-id tweets]
   (->> (:links tweets)
        (map #(-> %
                  (assoc :schema "tweet")
+                 (assoc :unread true)
                  (assoc :list-id list-id)
                  (assoc :score (score/score-tweet
                                  {:tw-score :default}
@@ -185,7 +193,7 @@
   (let [old-tweets (mark-old-tweets-for-deletion db-params list-id)]
     (if-let [new-tweets (some->> list-id
                                  (update-db-since-id! db-params)
-                                 (score-tweets list-id))]
+                                 (make-tweet-db-doc list-id))]
       (apply conj old-tweets new-tweets)
       old-tweets)))
 

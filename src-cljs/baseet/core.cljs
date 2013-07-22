@@ -55,7 +55,7 @@
   [target]
   (let [list-id (attrs/attr target :data-list-id)
         list-name (attrs/attr target :data-list-name)
-        url (str "list/" list-id "/" list-name)]
+        url (str "list-unread/" list-id "/" list-name)]
     (xhr/send url handle-tw-list-response "GET")))
 
 (defn handle-tw-list-click

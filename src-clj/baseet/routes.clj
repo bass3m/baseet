@@ -37,7 +37,11 @@
          (as-> list-req _
            (m/a-twitter-list {:option :all :list-req _} ctx)
            (v/a-twitter-list _)))
-    (GET "/list-unread/:id" [id] (m/a-twitter-list {:option :unread :id id}))
+    (GET ["/list-unread/:id/:list-name" :id #"\d+" :list-name #"\D+"]
+         [& list-req]
+         (as-> list-req _
+           (m/a-twitter-list {:option :unread :list-req _} ctx)
+           (v/a-twitter-list _)))
     (GET "/summarize/:tw-id" [tw-id] (-> tw-id
                                          (m/get-url-summary ctx)
                                          c/get-url-summary

@@ -203,14 +203,16 @@
   Option value : unread (only unread tweets) or all. Defaults to all.
   Return top 10 tweets for the list sorted by calculated score"
   [{option :option {id :id list-name :list-name} :list-req} ctx]
-  (let [db-name (-> ctx :db-params :db-name)]
+  (let [db-name (-> ctx :db-params :db-name)
+        doc-id (cond-> list-name
+                    (= :unread option) (str "-unread"))]
     (some->> id
          (tweet-db-housekeep! (:db-params ctx))
          (db/bulk-update db-name))
     (as-> db-name _
-        (db/get-view _ list-name (str list-name "-tweets") {:descending true
-                                                            :include_docs true
-                                                            :limit 10})
+        (db/get-view _ doc-id (str doc-id "-tweets") {:descending true
+                                                      :include_docs true
+                                                      :limit 10})
         (map #(assoc % :list-name list-name) _))))
 
 (defn get-url-summary

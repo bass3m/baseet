@@ -49,6 +49,7 @@
       (include-css "/bootstrap/css/bootstrap.css")
       (include-css "/font-awesome/css/font-awesome.min.css")
       (include-css "/css/style.css")
+      (include-css "/prettyCheckable/prettyCheckable.css")
       (include-css "/bootstrap/css/bootstrap-responsive.css")]
     [:body]
     [:div.container-fluid
@@ -63,6 +64,7 @@
     ;; need to find a better way than use harcoded name
     [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]
     (include-js "http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js")
+    (include-js "/prettyCheckable/prettyCheckable.js")
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
 (defn render-tweet
@@ -72,7 +74,12 @@
   [:div.tweet
    [:div.row-fluid
     [:div.span9.well.well-small
-      [:div.span3 [:strong (str (first (:urlers tweet)))]]
+      [:div.span3
+        [:input.mark-read.pull-left
+         {:type "checkbox" :value "unread" :name "mark-unread"
+          :data-label (str (first (:urlers tweet)))
+          :data-id (:_id tweet)}]]
+        ;[:strong {:style "font-size:15px;"} (str (first (:urlers tweet)))]]
       [:div.span6.muted {:style (str "font-size:11px;")}
        [:div.span2 [:i.icon-retweet] [:span (:rt-counts tweet)]]
        [:div.span2 [:i.icon-star] [:span (:fav-counts tweet)]]
@@ -115,7 +122,8 @@
 (defn get-url-summary [summary-sentences]
   (html (for [sentence summary-sentences] [:p sentence])))
 
-;(defn mark-tweet-read [tw-id])
+(defn mark-tweet-read [doc]
+  doc)
 
 ;(defn mark-list-read [list-id])
 

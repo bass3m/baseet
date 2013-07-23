@@ -16,8 +16,8 @@
 ;; GET "/summarize/<tweet-id>"
 ;;      => summarize : get summary for link.
 ;;         <tweet-id> : the tweet id containing the url to be summarized
-;; PUT "/tweet-done/<tweet-id>"
-;;      => tweet-done : mark tweet as read
+;; POST "/tweet-read/<tweet-id>"
+;;       => tweet-read : mark tweet as read
 ;;         <tweet-id> : the tweet id that we already read
 ;; PUT "/list-done/<list-id>"
 ;;      => list-done : mark twitter list as read
@@ -29,9 +29,6 @@
     (GET "/lists" request (-> request
                               (m/all-twitter-lists ctx)
                               v/all-twitter-lists))
-    (GET "/list/:id" [id] (as-> id _
-                            (m/a-twitter-list {:option :all :id _} ctx)
-                            (v/a-twitter-list _)))
     (GET ["/list/:id/:list-name" :id #"\d+" :list-name #"\D+"]
          [& list-req]
          (as-> list-req _
@@ -46,5 +43,8 @@
                                          (m/get-url-summary ctx)
                                          c/get-url-summary
                                          v/get-url-summary))
+    (POST "/tweet-read/:id" [id] (as-> id _
+                                       (m/mark-tweet-read _ ctx)
+                                       (v/mark-tweet-read _)))
     (route/resources "/") ;; XXX is this needed ?
     (route/not-found "Sorry, there's nothing here.")))

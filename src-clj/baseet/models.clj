@@ -50,14 +50,14 @@
                             {(str view-name "-tweets")
                              {:map (str "function(doc) {if(doc['schema'] == 'tweet' &&"
                                         " doc['list-id'] == " list-id " )"
-                                        "emit(doc['score'],doc);}")}}])
+                                        " emit(doc['score'],doc);}")}}])
   (db/save-design-document db-name :views (str doc-id "-unread")
                            ["javascript"
                             {(str view-name "-unread-tweets")
                              {:map (str "function(doc) {if(doc['schema'] == 'tweet' &&"
                                         " doc['list-id'] == " list-id
-                                        "&& doc.unread && doc.unread == true)"
-                                        "emit(doc['score'],doc);}")}}]))
+                                        " && doc.unread && doc.unread == true)"
+                                        " emit(doc['score'],doc);}")}}]))
 
 (defn create-twitter-list-views
   "Create view for each of our twitter lists. This should help
@@ -221,7 +221,13 @@
   (-> (-> ctx :db-params :db-name)
       (db/get-document tw-id)))
 
-;(defn mark-tweet-read [tw-id])
+(defn mark-tweet-read
+  "Mark this tweet as read"
+  [doc-id ctx]
+  (let [db-name (-> ctx :db-params :db-name)]
+    (db/update-document db-name
+                        (db/get-document db-name doc-id)
+                        assoc :unread false)))
 
 ;(defn mark-list-read [list-id])
 

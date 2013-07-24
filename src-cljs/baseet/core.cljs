@@ -43,16 +43,6 @@
   "Handle response for marking tweet as read"
   [id event]
   (let [target (.-target event)]
-        ;summary (.getResponseText target)
-        ;modal-body (-> js/document
-                       ;(.getElementById id)
-                       ;(.getElementsByClassName "modal-body")
-                       ;(.item 0))
-        ;url-div (-> modal-body
-                    ;.-parentNode
-                    ;.-nextSibling)]
-    (.log js/console target)
-    (.log js/console event)
     (log "Got response for mark tweet. id:" id)))
 
 (defn handle-mark-read-click
@@ -65,7 +55,10 @@
         url (str "tweet-read/" tweet-id)]
     (.stopPropagation event)
     (.preventDefault event)
-    (xhr/send url (partial handle-mark-tweet-response tweet-id) "POST")))
+    (xhr/send url (partial handle-mark-tweet-response tweet-id) "POST" {:test 1})))
+
+;; forward declarations since we reuse ajax handlers
+(declare handle-pager-click)
 
 (defn handle-tw-list-response
   "Receive tweets back from server, replace our current view. Add click
@@ -74,11 +67,27 @@
   (let [response (.-target event)
         tweets (.getResponseText response)]
     (dom/replace-contents! (sel1 :div.span10) (t/html->nodes tweets))
+    (dom/listen! (sel1 :.previous) :click handle-pager-click)
+    (dom/listen! (sel1 :.next) :click handle-pager-click)
     (doall
       (map #(dom/listen! % :click handle-mark-read-click) (sel :.mark-read)))
     (doall
       (map #(.prettyCheckable (js/jQuery %)) (sel :.mark-read))
       (map #(dom/listen! % :click handle-summarize-click) (sel :.modal-id)))))
+
+(defn handle-pager-click
+  [event]
+  (.stopPropagation event)
+  (.preventDefault event)
+  (let [target (.-target event)
+        tweet-key (attrs/attr target :data-key)
+        tw-list (-> (sel1 :.tw-list.active) .-childNodes (.item 0))
+        list-name (-> tw-list (attrs/attr :data-list-name))
+        list-id (-> tw-list (attrs/attr :data-list-id))
+        url (str list-id "/" list-name "/" tweet-key)]
+    (if (attrs/has-class? (.-parentNode target) "next")
+      (xhr/send (str "list-next-unread/" url) handle-tw-list-response "GET")
+      (xhr/send (str "list-prev-unread/" url) handle-tw-list-response "GET"))))
 
 (defn get-twitter-list
   "Send a GET request to our server, requesting the tweets for the list that

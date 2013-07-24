@@ -43,6 +43,18 @@
                                          (m/get-url-summary ctx)
                                          c/get-url-summary
                                          v/get-url-summary))
+    (GET ["/list-next-unread/:id/:list-name/:list-key" 
+          :id #"\d+" :list-name #"\D+" :list-key #"\w+"]
+         [& list-req]
+         (as-> list-req _
+           (m/next-in-twitter-list {:option :unread :list-req _} ctx)
+           (v/a-twitter-list _)))
+    (GET ["/list-prev-unread/:id/:list-name/:list-key" 
+          :id #"\d+" :list-name #"\D+" :list-key #"\w+"]
+         [& list-req]
+         (as-> list-req _
+           (m/prev-in-twitter-list {:option :unread :list-req _} ctx)
+           (v/a-twitter-list _)))
     (POST "/tweet-read/:id" [id] (as-> id _
                                        (m/mark-tweet-read _ ctx)
                                        (v/mark-tweet-read _)))

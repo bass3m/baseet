@@ -76,8 +76,7 @@
     [:div.span9.well.well-small
       [:div.span3
         [:input.mark-read.pull-left
-         {:type "checkbox" :value "unread" :name "mark-unread"
-          :data-label (str (first (:urlers tweet)))
+         {:type "checkbox" :data-label (str (first (:urlers tweet)))
           :data-id (:_id tweet)}]]
         ;[:strong {:style "font-size:15px;"} (str (first (:urlers tweet)))]]
       [:div.span6.muted {:style (str "font-size:11px;")}
@@ -114,10 +113,19 @@
   Option value : unread (only unread tweets) or all. Defaults to all"
   [request]
   (html
-    [:div.page-header.span9
-      [:h3 "Top scoring tweets for " [:small [:span (:list-name (first request))]]]]
-    (map (comp render-tweet :value) request)))
-
+    [:div.page-header.span9 {:style "margin:0px; padding-bottom:0px;"}
+      [:h3 "Top scoring tweets for " [:small
+                                      [:span (:list-name (first request))]]]]
+    [:div.span9 {:style "margin-left:0px;"}
+     [:ul.pager
+      [:li.previous.disabled [:a {:href "#"
+                                  :data-key (-> request first :key)}
+                              "&larr; Previous Page"]]
+      [:li.next [:a {:href "#" :data-key (-> request last :key)}
+                 "Next Page &rarr;"]]]]
+    (map (comp render-tweet :value) (take 10 request))))
+;
+;[:span "  Unread  " (str (:total_rows (meta request)))]]]]
 
 (defn get-url-summary [summary-sentences]
   (html (for [sentence summary-sentences] [:p sentence])))

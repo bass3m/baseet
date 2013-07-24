@@ -8,7 +8,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [ring/ring-core "1.2.0-RC1"]
                  [ring/ring-jetty-adapter "1.2.0-RC1"]
-                 [org.clojure/clojurescript "0.0-1835"]
+                 [org.clojure/clojurescript "0.0-1847"]
                  [com.ashafa/clutch "0.4.0-RC1"]
                  [compojure "1.1.5"] 
                  [hiccup "1.0.3"]

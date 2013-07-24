@@ -50,14 +50,14 @@
                             {(str view-name "-tweets")
                              {:map (str "function(doc) {if(doc['schema'] == 'tweet' &&"
                                         " doc['list-id'] == " list-id " )"
-                                        " emit(doc['score'],doc);}")}}])
+                                        " emit(doc['unique-score'],doc);}")}}])
   (db/save-design-document db-name :views (str doc-id "-unread")
                            ["javascript"
                             {(str view-name "-unread-tweets")
                              {:map (str "function(doc) {if(doc['schema'] == 'tweet' &&"
                                         " doc['list-id'] == " list-id
                                         " && doc.unread && doc.unread == true)"
-                                        " emit(doc['score'],doc);}")}}]))
+                                        " emit(doc['unique-score'],doc);}")}}]))
 
 (defn create-twitter-list-views
   "Create view for each of our twitter lists. This should help
@@ -120,6 +120,7 @@
                (create-twitter-list-views db-name)
                (db/bulk-update db-name))
           (map (juxt :name :list-id) latest-tw-lists))
+      ;; nil is also a logical false in clojure
       (needs-update? db-tw-lists-view)
         (let [latest-tw-lists (build-tw-list-doc
                                 (suweet/get-twitter-lists my-creds))]
@@ -129,17 +130,33 @@
           (map (juxt :name :list-id) latest-tw-lists))
       :else (map (comp (juxt :name :list-id) :value) db-tw-lists-view))))
 
+(defn generate-unique-score
+  "Make a unique score string while preserving the correct order.
+  This is needed because since we base our tweet scores on favs/retweets
+  there is the possibility of getting 0 scores, so we need a tie-breaker.
+  Use the tweet-id as the lowest significant 20 digits, 
+  and for the upper 8 digits, multiply the raw score by 10^8 taking 
+  care of rounding etc.."
+  [raw-score tweet]
+  (let [raw-score-factor 100000000
+        max-raw-score (- raw-score-factor 1)
+        score (java.lang.Math/round (double (* raw-score raw-score-factor)))]
+    (format "%08d%020d" 
+            (if (> score max-raw-score) max-raw-score score) (:id tweet))))
+
 (defn make-tweet-db-doc
   "Score our tweets and save them in db"
   [list-id tweets]
   (->> (:links tweets)
-       (map #(-> %
-                 (assoc :schema "tweet")
-                 (assoc :unread true)
-                 (assoc :list-id list-id)
-                 (assoc :score (score/score-tweet
-                                 {:tw-score :default}
-                                 ((juxt :fav-counts :rt-counts :follow-count) %)))))))
+       (map #(let [score (score/score-tweet
+                            {:tw-score :default}
+                            ((juxt :fav-counts :rt-counts :follow-count) %))]
+               (-> %
+                   (assoc :schema "tweet")
+                   (assoc :unread true)
+                   (assoc :list-id list-id)
+                   (assoc :score score)
+                   (assoc :unique-score (generate-unique-score score %)))))))
 
 (defn too-old?
   ([tweet-activity-view] (too-old? 3 tweet-activity-view))
@@ -197,23 +214,49 @@
       (apply conj old-tweets new-tweets)
       old-tweets)))
 
-;; make the 10 limit configurable
+(defn get-tweets-from-list
+  "Get the tweet view for the twitter list"
+  [option db-params list-id list-name view-cfg]
+  (let [db-name (:db-name db-params)
+        doc-id (cond-> list-name
+                    (= :unread option) (str "-unread"))]
+    (some->> list-id
+         (tweet-db-housekeep! db-params)
+         (db/bulk-update db-name))
+    (as-> db-name _
+        (db/get-view _ doc-id (str doc-id "-tweets") view-cfg)
+        (map #(assoc % :list-name list-name) _))))
+
+;; make the 11 limit configurable
 (defn a-twitter-list
   "Get tweets from a twitter list identied by the list id.
   Option value : unread (only unread tweets) or all. Defaults to all.
-  Return top 10 tweets for the list sorted by calculated score"
+  Return top 10 tweets for the list sorted by calculated score +
+  add an additional tweet for pager."
   [{option :option {id :id list-name :list-name} :list-req} ctx]
-  (let [db-name (-> ctx :db-params :db-name)
-        doc-id (cond-> list-name
-                    (= :unread option) (str "-unread"))]
-    (some->> id
-         (tweet-db-housekeep! (:db-params ctx))
-         (db/bulk-update db-name))
-    (as-> db-name _
-        (db/get-view _ doc-id (str doc-id "-tweets") {:descending true
-                                                      :include_docs true
-                                                      :limit 10})
-        (map #(assoc % :list-name list-name) _))))
+  (get-tweets-from-list 
+    option (:db-params ctx) id list-name
+    {:descending true :include_docs true :limit 11}))
+
+(defn prev-in-twitter-list
+  "Get previous page of tweets from a twitter list identied by the list id.
+  Use list-key as a way to page in db. Needs to be reversed for the correct order"
+  [{option :option {id :id 
+                    list-name :list-name 
+                    list-key :list-key} :list-req} ctx]
+  (reverse (get-tweets-from-list 
+             option (:db-params ctx) id list-name
+             {:include_docs true :limit 11 :startkey list-key})))
+
+(defn next-in-twitter-list
+  "Get next page of tweets from a twitter list identied by the list id.
+  Use list-key as a way to page in db"
+  [{option :option {id :id 
+                    list-name :list-name 
+                    list-key :list-key} :list-req} ctx]
+  (get-tweets-from-list 
+    option (:db-params ctx) id list-name
+    {:descending true :include_docs true :limit 11 :startkey list-key}))
 
 (defn get-url-summary
   "Summarize the requested tweet. The client sends as an id to the db document"

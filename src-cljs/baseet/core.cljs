@@ -43,6 +43,7 @@
   "Handle response for marking tweet as read"
   [id event]
   (let [target (.-target event)]
+    ;; decrement the total unread count
     (log "Got response for mark tweet. id:" id)))
 
 (defn handle-mark-read-click
@@ -72,7 +73,8 @@
     (doall
       (map #(dom/listen! % :click handle-mark-read-click) (sel :.mark-read)))
     (doall
-      (map #(.prettyCheckable (js/jQuery %)) (sel :.mark-read))
+      (map #(.prettyCheckable (js/jQuery %)) (sel :.mark-read)))
+    (doall
       (map #(dom/listen! % :click handle-summarize-click) (sel :.modal-id)))))
 
 (defn handle-pager-click

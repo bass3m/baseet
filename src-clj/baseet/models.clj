@@ -134,14 +134,14 @@
   "Make a unique score string while preserving the correct order.
   This is needed because since we base our tweet scores on favs/retweets
   there is the possibility of getting 0 scores, so we need a tie-breaker.
-  Use the tweet-id as the lowest significant 20 digits, 
-  and for the upper 8 digits, multiply the raw score by 10^8 taking 
+  Use the tweet-id as the lowest significant 20 digits,
+  and for the upper 8 digits, multiply the raw score by 10^8 taking
   care of rounding etc.."
   [raw-score tweet]
   (let [raw-score-factor 100000000
         max-raw-score (- raw-score-factor 1)
         score (java.lang.Math/round (double (* raw-score raw-score-factor)))]
-    (format "%08d%020d" 
+    (format "%08d%020d"
             (if (> score max-raw-score) max-raw-score score) (:id tweet))))
 
 (defn make-tweet-db-doc
@@ -225,7 +225,7 @@
          (db/bulk-update db-name))
     (as-> db-name _
         (db/get-view _ doc-id (str doc-id "-tweets") view-cfg)
-        (map #(assoc % :list-name list-name) _))))
+        (with-meta (map #(assoc % :list-name list-name) _) (meta _)))))
 
 ;; make the 11 limit configurable
 (defn a-twitter-list
@@ -234,29 +234,41 @@
   Return top 10 tweets for the list sorted by calculated score +
   add an additional tweet for pager."
   [{option :option {id :id list-name :list-name} :list-req} ctx]
-  (get-tweets-from-list 
-    option (:db-params ctx) id list-name
-    {:descending true :include_docs true :limit 11}))
+  {:first-page true
+   :tweets (get-tweets-from-list
+             option (:db-params ctx) id list-name
+             {:descending true :include_docs true :limit 11})})
 
 (defn prev-in-twitter-list
   "Get previous page of tweets from a twitter list identied by the list id.
-  Use list-key as a way to page in db. Needs to be reversed for the correct order"
-  [{option :option {id :id 
-                    list-name :list-name 
+  Use list-key as a way to page in db. Needs to be reversed for the correct order
+  If the view returned only 1 result (our starting key) that means that we reached the
+  beginning, so grab the first entries from view instead."
+  [{option :option {id :id
+                    list-name :list-name
                     list-key :list-key} :list-req} ctx]
-  (reverse (get-tweets-from-list 
-             option (:db-params ctx) id list-name
-             {:include_docs true :limit 11 :startkey list-key})))
+  (let [view-opts {:include_docs true :limit 11 :startkey list-key}
+        tweets (get-tweets-from-list
+                 option (:db-params ctx) id list-name view-opts)]
+    (if (= (count tweets) 1)
+      {:first-page true
+       :tweets (get-tweets-from-list
+                 option (:db-params ctx) id list-name
+                 (assoc view-opts :descending true))}
+      ;; the reverse requires saving the metadata
+      {:first-page false
+       :tweets (with-meta (reverse tweets) (meta tweets))})))
 
 (defn next-in-twitter-list
   "Get next page of tweets from a twitter list identied by the list id.
   Use list-key as a way to page in db"
-  [{option :option {id :id 
-                    list-name :list-name 
+  [{option :option {id :id
+                    list-name :list-name
                     list-key :list-key} :list-req} ctx]
-  (get-tweets-from-list 
-    option (:db-params ctx) id list-name
-    {:descending true :include_docs true :limit 11 :startkey list-key}))
+  {:first-page false
+   :tweets (get-tweets-from-list
+             option (:db-params ctx) id list-name
+             {:descending true :include_docs true :limit 11 :startkey list-key})})
 
 (defn get-url-summary
   "Summarize the requested tweet. The client sends as an id to the db document"

@@ -108,30 +108,41 @@
            [:a {:href (:url tweet) :style (str "margin-left:5px;")}
             (str (:url tweet))]])])]]])
 
+(defn pager-view
+  [first-page tw-count tw-per-page]
+  (cond-> {:next "li.next" :prev "li.previous"}
+    (< tw-count tw-per-page) (assoc :next "li.next.disabled")
+    first-page (assoc :prev "li.previous.disabled")))
+
 (defn a-twitter-list
   "Get tweets from a twitter list identied by the list id.
   Option value : unread (only unread tweets) or all. Defaults to all"
   [request]
+  (let [tweets (:tweets request)
+        total-tw (:total_rows (meta tweets))
+        pager (-> (pager-view (:first-page request) total-tw 10))]
   (html
     [:div.page-header.span9 {:style "margin:0px; padding-bottom:0px;"}
-      [:h3 "Top scoring tweets for " [:small
-                                      [:span (:list-name (first request))]]]]
+      [:h3 "Top scoring tweets for "
+       [:small
+        [:span (:list-name (first tweets))]
+        [:span "  Unread  " (str total-tw)]]]]
     [:div.span9 {:style "margin-left:0px;"}
      [:ul.pager
-      [:li.previous.disabled [:a {:href "#"
-                                  :data-key (-> request first :key)}
+      [(-> pager :prev keyword) [:a {:href "#" :data-key (-> tweets first :key)}
                               "&larr; Previous Page"]]
-      [:li.next [:a {:href "#" :data-key (-> request last :key)}
+      [(-> pager :next keyword) [:a {:href "#" :data-key (-> tweets last :key)}
                  "Next Page &rarr;"]]]]
-    (map (comp render-tweet :value) (take 10 request))))
-;
-;[:span "  Unread  " (str (:total_rows (meta request)))]]]]
+    (map (comp render-tweet :value) (take 10 tweets)))))
 
 (defn get-url-summary [summary-sentences]
   (html (for [sentence summary-sentences] [:p sentence])))
 
-(defn mark-tweet-read [doc]
-  doc)
+;; TODO get rid of if never needed
+(defn mark-tweet-read
+  "Doesn't do anything right now."
+  [_]
+  {:update "ok"})
 
 ;(defn mark-list-read [list-id])
 

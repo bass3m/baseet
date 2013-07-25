@@ -10,7 +10,7 @@
                  [ring/ring-jetty-adapter "1.2.0-RC1"]
                  [org.clojure/clojurescript "0.0-1847"]
                  [com.ashafa/clutch "0.4.0-RC1"]
-                 [compojure "1.1.5"] 
+                 [compojure "1.1.5"]
                  [hiccup "1.0.3"]
                  [prismatic/dommy "0.1.1"]
                  [suweet "0.1.4-SNAPSHOT"]]

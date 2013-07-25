@@ -120,13 +120,14 @@
   [request]
   (let [tweets (:tweets request)
         total-tw (:total_rows (meta tweets))
-        pager (-> (pager-view (:first-page request) total-tw 10))]
+        pager (-> (pager-view (:first-page request) (count tweets) 10))]
   (html
     [:div.page-header.span9 {:style "margin:0px; padding-bottom:0px;"}
-      [:h3 "Top scoring tweets for "
-       [:small
-        [:span (:list-name (first tweets))]
-        [:span "  Unread  " (str total-tw)]]]]
+     [:div.row {:style "margin-left:0px;"}
+      [:h3.span9  "Top scoring tweets for "]
+      [:small.span3.muted {:style "font-size:103%;margin-top:2.8%;text-align:right;"}
+       [:span (:list-name (first tweets))]
+       [:span "  Unread  "] [:span.unread-count total-tw]]]]
     [:div.span9 {:style "margin-left:0px;"}
      [:ul.pager
       [(-> pager :prev keyword) [:a {:href "#" :data-key (-> tweets first :key)}
@@ -144,6 +145,9 @@
   [_]
   {:update "ok"})
 
+(defn toggle-tweet-state
+  [req]
+  req)
 ;(defn mark-list-read [list-id])
 
 ;(defn mark-all-read [])

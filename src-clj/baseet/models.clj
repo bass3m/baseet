@@ -276,6 +276,14 @@
   (-> (-> ctx :db-params :db-name)
       (db/get-document tw-id)))
 
+(defn toggle-tweet-state
+  "Mark the tweet as read or unread"
+  [id ctx]
+  (let [db-name (-> ctx :db-params :db-name)
+        tweet (db/get-document db-name id)]
+    (db/update-document db-name tweet
+                        assoc :unread (not (:unread tweet)))))
+
 (defn mark-tweet-read
   "Mark this tweet as read"
   [doc-id ctx]

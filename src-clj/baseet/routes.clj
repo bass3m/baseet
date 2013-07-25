@@ -58,5 +58,9 @@
     (POST "/tweet-read/:id" [id] (as-> id _
                                        (m/mark-tweet-read _ ctx)
                                        (v/mark-tweet-read _)))
+    (PUT ["/toggle-tweet-state/:id" :id #"\w+"] [id]
+         (-> id
+             (m/toggle-tweet-state ctx)
+             v/toggle-tweet-state))
     (route/resources "/") ;; XXX is this needed ?
     (route/not-found "Sorry, there's nothing here.")))

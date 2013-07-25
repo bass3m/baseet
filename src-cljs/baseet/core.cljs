@@ -40,24 +40,37 @@
       (xhr/send url (partial handle-summary-response tweet-id) "GET"))))
 
 (defn handle-mark-tweet-response
-  "Handle response for marking tweet as read"
-  [id event]
-  (let [target (.-target event)]
+  "Handle response for marking tweet as read.
+  Update the unread count and mute text accordingly"
+  [parent _ event]
+  (let [target (.-target event)
+        unread (-> js/document
+                   (.getElementsByClassName "unread-count")
+                   (.item 0))]
     ;; decrement the total unread count
-    (log "Got response for mark tweet. id:" id)))
+    ;; toggle the muted class
+    (if (attrs/has-class? parent "muted")
+      (do 
+        (dom/toggle-class! parent "muted")
+        ;; TODO look into whether this is a cljs bug ?
+        (dom/set-html! unread (inc (js/parseInt (.-innerHTML unread)))))
+      (do
+        (dom/add-class! parent "muted")
+        (dom/set-html! unread (dec (.-innerHTML unread)))))))
 
-(defn handle-mark-read-click
+
+(defn handle-mark-tweet-state-click
   "Click handler for a request to summarize a link.
   the data-summarized boolean attribute acts as a cacheing flag."
   [event]
   (let [target (.-target event)
         parent (-> target .-parentNode .-parentNode .-parentNode)
         tweet-id (attrs/attr target :data-id)
-        url (str "tweet-read/" tweet-id)]
+        url (str "toggle-tweet-state/" tweet-id)]
     (.stopPropagation event)
     (.preventDefault event)
-    (xhr/send url (partial handle-mark-tweet-response tweet-id) "POST" {:test 1})))
-
+    (xhr/send url (partial handle-mark-tweet-response parent tweet-id) "PUT")))
+;; use comp perhaps above
 ;; forward declarations since we reuse ajax handlers
 (declare handle-pager-click)
 
@@ -71,7 +84,7 @@
     (dom/listen! (sel1 :.previous) :click handle-pager-click)
     (dom/listen! (sel1 :.next) :click handle-pager-click)
     (doall
-      (map #(dom/listen! % :click handle-mark-read-click) (sel :.mark-read)))
+      (map #(dom/listen! % :click handle-mark-tweet-state-click) (sel :.mark-read)))
     (doall
       (map #(.prettyCheckable (js/jQuery %)) (sel :.mark-read)))
     (doall
@@ -81,15 +94,16 @@
   [event]
   (.stopPropagation event)
   (.preventDefault event)
-  (let [target (.-target event)
-        tweet-key (attrs/attr target :data-key)
-        tw-list (-> (sel1 :.tw-list.active) .-childNodes (.item 0))
-        list-name (-> tw-list (attrs/attr :data-list-name))
-        list-id (-> tw-list (attrs/attr :data-list-id))
-        url (str list-id "/" list-name "/" tweet-key)]
-    (if (attrs/has-class? (.-parentNode target) "next")
-      (xhr/send (str "list-next-unread/" url) handle-tw-list-response "GET")
-      (xhr/send (str "list-prev-unread/" url) handle-tw-list-response "GET"))))
+  (when-not (attrs/has-class? (-> event .-target .-parentNode ) "disabled")
+    (let [target (.-target event)
+          tweet-key (attrs/attr target :data-key)
+          tw-list (-> (sel1 :.tw-list.active) .-childNodes (.item 0))
+          list-name (-> tw-list (attrs/attr :data-list-name))
+          list-id (-> tw-list (attrs/attr :data-list-id))
+          url (str list-id "/" list-name "/" tweet-key)]
+      (if (attrs/has-class? (.-parentNode target) "next")
+        (xhr/send (str "list-next-unread/" url) handle-tw-list-response "GET")
+        (xhr/send (str "list-prev-unread/" url) handle-tw-list-response "GET")))))
 
 (defn get-twitter-list
   "Send a GET request to our server, requesting the tweets for the list that

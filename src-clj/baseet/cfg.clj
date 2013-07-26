@@ -1,9 +1,22 @@
-(ns baseet.cfg)
+(ns baseet.cfg
+   (:require [suweet.twitter :as suweet :only (make-twitter-creds)]))
 
 (defn get-twitter-cfg
   "Get twitter keys and tokens from config file"
   []
-  (read-string (slurp "twitter-cfg.txt")))
+  (-> "twitter-cfg.txt"
+      clojure.java.io/resource
+      slurp
+      read-string))
+
+(defn twitter-creds
+  "Simple wrapper around the api call"
+  [{:keys [app-consumer-key
+           app-consumer-secret
+           access-token-key
+           access-token-secret]}]
+  (suweet/make-twitter-creds app-consumer-key app-consumer-secret
+                             access-token-key access-token-secret))
 
 (defrecord DefaultCfg [cfg-file server-params db-params])
 (defrecord DefaultDbParams [db-type db-name views])
@@ -17,11 +30,14 @@
                          :db-name "tw-db"
                          :views {:twitter-list {:view-name "tw-list-view" :keys []}
                                  :tweets       {:view-name "by-list"}}}))
+(defn twitter-params []
+  (-> (get-twitter-cfg) twitter-creds)) 
 
 (defn default-cfg []
   (map->DefaultCfg {:cfg-file "baseet-cfg.txt"
                     :server-params (default-server-params)
-                    :db-params (default-db-params)}))
+                    :db-params (default-db-params)
+                    :twitter-params (twitter-params)}))
 
 (defn merge-cfg
   "Read our config file and merge it with the config supplied

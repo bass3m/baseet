@@ -46,10 +46,10 @@
       [:title "Twitter Lists"]
       [:meta  {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
-      (include-css "/bootstrap/css/bootstrap.css")
+      (include-css "/bootstrap/css/bootstrap.min.css")
       (include-css "/font-awesome/css/font-awesome.min.css")
       (include-css "/css/style.css")
-      (include-css "/bootstrap/css/bootstrap-responsive.css")]
+      (include-css "/bootstrap/css/bootstrap-responsive.min.css")]
     [:body]
     [:div.container-fluid
      [:div.row-fluid

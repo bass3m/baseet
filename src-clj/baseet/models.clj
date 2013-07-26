@@ -1,24 +1,11 @@
 (ns baseet.models
   (:require [com.ashafa.clutch :as db]
             [suweet.twitter :as suweet :only (get-twitter-lists
-                                              make-twitter-creds
                                               get-twitter-list-tweets)]
             [suweet.score :as score :only (score-tweet)]
             [baseet.cfg :as cfg :only (get-twitter-cfg)]
             [clj-time.core :as clj-time]
             [clj-time.coerce :as coerce]))
-
-(defn twitter-creds
-  "Simple wrapper around the api call"
-  [{:keys [app-consumer-key
-           app-consumer-secret
-           access-token-key
-           access-token-secret]}]
-  (suweet/make-twitter-creds app-consumer-key app-consumer-secret
-                             access-token-key access-token-secret))
-
-;; XXX move this somwehere else ??
-(def my-creds (twitter-creds (cfg/get-twitter-cfg)))
 
 (defn needs-update?
   "Should update out twitter lists once a day. The view returns with a map
@@ -115,7 +102,7 @@
     (cond
       (empty? db-tw-lists-view)
         (let [latest-tw-lists (build-tw-list-doc
-                                (suweet/get-twitter-lists my-creds))]
+                                (suweet/get-twitter-lists (:twitter-params ctx)))]
           (->> latest-tw-lists
                (create-twitter-list-views db-name)
                (db/bulk-update db-name))
@@ -123,7 +110,7 @@
       ;; nil is also a logical false in clojure
       (needs-update? db-tw-lists-view)
         (let [latest-tw-lists (build-tw-list-doc
-                                (suweet/get-twitter-lists my-creds))]
+                                (suweet/get-twitter-lists (:twitter-params ctx)))]
           (as-> db-name _
               (update-db-tw-lists! _ db-tw-lists-view latest-tw-lists)
               (db/bulk-update db-name _))
@@ -188,7 +175,7 @@
   "Side effects a-plenty. First get the list view from db containing the
   latest since-id. Get tweets since the since-id. Update db entry with
   the id obtained from the view query. Finally return the new tweets."
-  [db-params list-id]
+  [{:keys [db-params twitter-params]} list-id]
   (let [db-name (:db-name db-params)
         db-tw-lists-view (-> db-name
                              (db/get-view
@@ -199,7 +186,7 @@
       (let [doc-id (:id (first db-tw-lists-view))
             since-id (:since-id (db/get-document db-name doc-id))
             tweets (->> {:list-id list-id :since-id since-id}
-                        (suweet/get-twitter-list-tweets my-creds))]
+                        (suweet/get-twitter-list-tweets twitter-params))]
         (when (> (:since-id tweets) since-id)
           (db/update-document db-name
                               (db/get-document db-name doc-id)
@@ -207,22 +194,22 @@
           tweets)))))
 
 (defn tweet-db-housekeep!
-  [db-params list-id]
+  [{:keys [db-params] :as ctx} list-id]
   (let [old-tweets (mark-old-tweets-for-deletion db-params list-id)]
     (if-let [new-tweets (some->> list-id
-                                 (update-db-since-id! db-params)
+                                 (update-db-since-id! ctx)
                                  (make-tweet-db-doc list-id))]
       (apply conj old-tweets new-tweets)
       old-tweets)))
 
 (defn get-tweets-from-list
   "Get the tweet view for the twitter list"
-  [option db-params list-id list-name view-cfg]
+  [option {:keys [db-params] :as ctx} list-id list-name view-cfg]
   (let [db-name (:db-name db-params)
         doc-id (cond-> list-name
                     (= :unread option) (str "-unread"))]
     (some->> list-id
-         (tweet-db-housekeep! db-params)
+         (tweet-db-housekeep! ctx)
          (db/bulk-update db-name))
     (as-> db-name _
         (db/get-view _ doc-id (str doc-id "-tweets") view-cfg)
@@ -237,7 +224,7 @@
   [{option :option {id :id list-name :list-name} :list-req} ctx]
   {:first-page true
    :tweets (get-tweets-from-list
-             option (:db-params ctx) id list-name
+             option ctx id list-name
              {:descending true :include_docs true :limit 11})})
 
 (defn prev-in-twitter-list
@@ -250,11 +237,11 @@
                     list-key :list-key} :list-req} ctx]
   (let [view-opts {:include_docs true :limit 11 :startkey list-key}
         tweets (get-tweets-from-list
-                 option (:db-params ctx) id list-name view-opts)]
+                 option ctx id list-name view-opts)]
     (if (= (count tweets) 1)
       {:first-page true
        :tweets (get-tweets-from-list
-                 option (:db-params ctx) id list-name
+                 option ctx id list-name
                  (assoc view-opts :descending true))}
       ;; the reverse requires saving the metadata
       {:first-page false
@@ -268,7 +255,7 @@
                     list-key :list-key} :list-req} ctx]
   {:first-page false
    :tweets (get-tweets-from-list
-             option (:db-params ctx) id list-name
+             option ctx id list-name
              {:descending true :include_docs true :limit 11 :startkey list-key})})
 
 (defn get-url-summary

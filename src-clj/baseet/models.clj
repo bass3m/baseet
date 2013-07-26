@@ -282,16 +282,20 @@
   [id ctx]
   (let [db-name (-> ctx :db-params :db-name)
         tweet (db/get-document db-name id)]
-    (db/update-document db-name tweet
-                        assoc :unread (not (:unread tweet)))))
+    (db/update-document db-name (as-> tweet _
+                                      (assoc _ :unread (not (:unread _)))
+                                      (assoc _ :_rev (:_rev _))
+                                      (assoc _ :_id (:_id _))))))
 
 (defn mark-tweet-read
   "Mark this tweet as read"
   [doc-id ctx]
   (let [db-name (-> ctx :db-params :db-name)]
     (db/update-document db-name
-                        (db/get-document db-name doc-id)
-                        assoc :unread false)))
+                        (as-> (db/get-document db-name doc-id) _
+                              (assoc _ :unread false)
+                              (assoc _ :_rev (:_rev _))
+                              (assoc _ :_id (:_id _))))))
 
 (defn read-tweet-page
   "Mark the whole page of tweets to read"
@@ -303,11 +307,12 @@
     (as-> db-name _
         (db/get-view _ doc-id (keyword (str doc-id "-tweets"))
                      {:descending true :limit 10
-                      :startkey start-doc :endkey end-doc})
-        (map #(as-> % tweet
-                  (assoc-in tweet [:value :unread] false)
-                  (assoc tweet :_rev (-> tweet :value :_rev))
-                  (assoc tweet :_id (:id tweet))) _)
+                      :startkey (str start-doc) :endkey (str end-doc)})
+        (reduce (fn [updates tweet]
+                  (conj updates (-> tweet
+                                    :value
+                                    (assoc :unread false))))
+                [] _)
         (db/bulk-update db-name _))))
 
 ;(defn mark-list-read [list-id])

@@ -49,7 +49,6 @@
       (include-css "/bootstrap/css/bootstrap.css")
       (include-css "/font-awesome/css/font-awesome.min.css")
       (include-css "/css/style.css")
-      (include-css "/prettyCheckable/prettyCheckable.css")
       (include-css "/bootstrap/css/bootstrap-responsive.css")]
     [:body]
     [:div.container-fluid
@@ -64,7 +63,6 @@
     ;; need to find a better way than use harcoded name
     [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]
     (include-js "http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js")
-    (include-js "/prettyCheckable/prettyCheckable.js")
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
 (defn render-tweet
@@ -75,10 +73,13 @@
    [:div.row-fluid
     [:div.span9.well.well-small
       [:div.span3
-        [:input.mark-read.pull-left
-         {:type "checkbox" :data-label (str (first (:urlers tweet)))
-          :data-id (:_id tweet)}]]
-        ;[:strong {:style "font-size:15px;"} (str (first (:urlers tweet)))]]
+       [:div.check-box
+        [:input.tweet-hdr.pull-left
+         {:type "checkbox" :id "check-box" :name "check"
+          :data-label (str (first (:urlers tweet)))
+          :data-id (:_id tweet)}]
+       [:label {:for "check-box"}]]
+      [:span.tweeter {:style "margin-left:8%;"} (str (first (:urlers tweet)))]]
       [:div.span6.muted {:style (str "font-size:11px;")}
        [:div.span2 [:i.icon-retweet] [:span (:rt-counts tweet)]]
        [:div.span2 [:i.icon-star] [:span (:fav-counts tweet)]]
@@ -124,10 +125,13 @@
   (html
     [:div.page-header.span9 {:style "margin:0px; padding-bottom:0px;"}
      [:div.row {:style "margin-left:0px;"}
-      [:h3.span9  "Top scoring tweets for "]
-      [:small.span3.muted {:style "font-size:103%;margin-top:2.8%;text-align:right;"}
-       [:span (:list-name (first tweets))]
-       [:span "  Unread  "] [:span.unread-count total-tw]]]]
+      [:h3.span9  "Top scoring tweets for " 
+       [:span.muted [:em (:list-name (first tweets))]]]
+      [:small.span3.muted {:style "font-size:103%;margin-top:2.6%;text-align:right;"}
+       [:div.btn-group {:style "margin-right:1%;"}
+        [:a.btn.btn-small {:href "#"} [:i.icon-repeat.refresh]]
+        [:a.btn.btn-small {:href "#"} [:i.icon-check-sign.page-read]]]
+       [:span "  Unread  "] [:span.unread-count {:style "color: #0088cc;"} total-tw]]]]
     [:div.span9 {:style "margin-left:0px;"}
      [:ul.pager
       [(-> pager :prev keyword) [:a {:href "#" :data-key (-> tweets first :key)}

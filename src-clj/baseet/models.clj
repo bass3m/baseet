@@ -154,6 +154,7 @@
                (-> %
                    (assoc :schema "tweet")
                    (assoc :unread true)
+                   (assoc :save false)
                    (assoc :list-id list-id)
                    (assoc :score score)
                    (assoc :unique-score (generate-unique-score score %)))))))

@@ -43,19 +43,21 @@
   "Handle response for marking tweet as read.
   Update the unread count and mute text accordingly"
   [parent _ event]
-  (let [target (.-target event)
-        unread (-> js/document
+  (let [unread (-> js/document
                    (.getElementsByClassName "unread-count")
-                   (.item 0))]
+                   (.item 0))
+        checkbox (-> parent .-firstChild .-firstChild .-firstChild)]
     ;; decrement the total unread count
     ;; toggle the muted class
     (if (attrs/has-class? parent "muted")
-      (do 
+      (do
         (dom/toggle-class! parent "muted")
+        (attrs/remove-attr! checkbox :checked)  
         ;; TODO look into whether this is a cljs bug ?
         (dom/set-html! unread (inc (js/parseInt (.-innerHTML unread)))))
       (do
         (dom/add-class! parent "muted")
+        (attrs/set-attr! checkbox :checked "checked")  
         (dom/set-html! unread (dec (.-innerHTML unread)))))))
 
 
@@ -65,14 +67,24 @@
   [event]
   (let [target (.-target event)
         parent (-> target .-parentNode .-parentNode .-parentNode)
-        tweet-id (attrs/attr target :data-id)
+        tweet-id (attrs/attr (-> target .-parentNode .-firstChild) :data-id)
         url (str "toggle-tweet-state/" tweet-id)]
     (.stopPropagation event)
     (.preventDefault event)
-    (xhr/send url (partial handle-mark-tweet-response parent tweet-id) "PUT")))
-;; use comp perhaps above
+    (xhr/send url (partial handle-mark-tweet-response parent target) "PUT")))
+
 ;; forward declarations since we reuse ajax handlers
-(declare handle-pager-click)
+(declare handle-pager-click get-twitter-list)
+
+(defn handle-page-read-click
+  [_]
+  (let [tweet-hdrs (sel1 :.tweet-hdr)]
+    (.log js/console tweet-hdrs)))
+
+
+(defn handle-refresh-click
+  [_]
+  (get-twitter-list (.-firstChild (sel1 :.tw-list.active))))
 
 (defn handle-tw-list-response
   "Receive tweets back from server, replace our current view. Add click
@@ -83,10 +95,10 @@
     (dom/replace-contents! (sel1 :div.span10) (t/html->nodes tweets))
     (dom/listen! (sel1 :.previous) :click handle-pager-click)
     (dom/listen! (sel1 :.next) :click handle-pager-click)
+    (dom/listen! (sel1 :.refresh) :click handle-refresh-click)
+    (dom/listen! (sel1 :.page-read) :click handle-page-read-click)
     (doall
-      (map #(dom/listen! % :click handle-mark-tweet-state-click) (sel :.mark-read)))
-    (doall
-      (map #(.prettyCheckable (js/jQuery %)) (sel :.mark-read)))
+      (map #(dom/listen! % :click handle-mark-tweet-state-click) (sel :.check-box)))
     (doall
       (map #(dom/listen! % :click handle-summarize-click) (sel :.modal-id)))))
 
@@ -124,6 +136,7 @@
       (dom/remove-class! act :active))
     ;; first is our node so our parent is second node
     (-> target dom/ancestor-nodes second (dom/add-class! :active))
+    (.log js/console target)
     (get-twitter-list target)))
 
 (defn ^:export main []

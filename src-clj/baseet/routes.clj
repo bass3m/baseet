@@ -55,9 +55,9 @@
          (as-> list-req _
            (m/prev-in-twitter-list {:option :unread :list-req _} ctx)
            (v/a-twitter-list _)))
-    (POST "/tweet-read/:id" [id] (as-> id _
-                                       (m/mark-tweet-read _ ctx)
-                                       (v/mark-tweet-read _)))
+    (PUT "/tweet-read/:id" [id] (as-> id _
+                                      (m/mark-tweet-read _ ctx)
+                                      (v/mark-tweet-read _)))
     (PUT ["/toggle-tweet-state/:id" :id #"\w+"] [id]
          (-> id
              (m/toggle-tweet-state ctx)

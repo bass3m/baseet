@@ -125,7 +125,7 @@
   (html
     [:div.page-header.span9 {:style "margin:0px; padding-bottom:0px;"}
      [:div.row {:style "margin-left:0px;"}
-      [:h3.span9  "Top scoring tweets for " 
+      [:h3.span9  "Top scoring tweets for "
        [:span.muted [:em (:list-name (first tweets))]]]
       [:small.span3.muted {:style "font-size:103%;margin-top:2.6%;text-align:right;"}
        [:div.btn-group {:style "margin-right:1%;"}
@@ -152,6 +152,12 @@
 (defn toggle-tweet-state
   [req]
   req)
+
+;; for nor, not much
+(defn read-tweet-page
+  [_]
+  {:update "ok"})
+
 ;(defn mark-list-read [list-id])
 
 ;(defn mark-all-read [])

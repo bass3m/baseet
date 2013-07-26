@@ -39,10 +39,11 @@
     (when (= "false" (attrs/attr target :data-summarized))
       (xhr/send url (partial handle-summary-response tweet-id) "GET"))))
 
-(defn handle-mark-tweet-response
+(defn toggle-tweet-state
   "Handle response for marking tweet as read.
-  Update the unread count and mute text accordingly"
-  [parent _ event]
+  Update the unread count and mute text accordingly
+  It's really a toggle tweet state."
+  [parent _]
   (let [unread (-> js/document
                    (.getElementsByClassName "unread-count")
                    (.item 0))
@@ -52,14 +53,13 @@
     (if (attrs/has-class? parent "muted")
       (do
         (dom/toggle-class! parent "muted")
-        (attrs/remove-attr! checkbox :checked)  
+        (attrs/remove-attr! checkbox :checked)
         ;; TODO look into whether this is a cljs bug ?
         (dom/set-html! unread (inc (js/parseInt (.-innerHTML unread)))))
       (do
         (dom/add-class! parent "muted")
-        (attrs/set-attr! checkbox :checked "checked")  
+        (attrs/set-attr! checkbox :checked "checked")
         (dom/set-html! unread (dec (.-innerHTML unread)))))))
-
 
 (defn handle-mark-tweet-state-click
   "Click handler for a request to summarize a link.
@@ -71,16 +71,32 @@
         url (str "toggle-tweet-state/" tweet-id)]
     (.stopPropagation event)
     (.preventDefault event)
-    (xhr/send url (partial handle-mark-tweet-response parent target) "PUT")))
+    (xhr/send url (partial toggle-tweet-state parent) "PUT")))
 
 ;; forward declarations since we reuse ajax handlers
 (declare handle-pager-click get-twitter-list)
 
-(defn handle-page-read-click
+(defn handle-page-read-response
   [_]
-  (let [tweet-hdrs (sel1 :.tweet-hdr)]
-    (.log js/console tweet-hdrs)))
+  (let [tweet-hdrs (sel :.tweet-hdr)]
+    (doall
+      (map #(when-not (attrs/attr % :checked)
+              (toggle-tweet-state (-> % .-parentNode
+                                        .-parentNode
+                                        .-parentNode) _))
+           tweet-hdrs))))
 
+(defn handle-page-read-click
+  [event]
+  (let [tweet-hdrs (sel :.tweet-hdr)
+        tw-list (-> (sel1 :.tw-list.active) .-childNodes (.item 0))
+        list-name (-> tw-list (attrs/attr :data-list-name))
+        start-key (attrs/attr (first tweet-hdrs) :data-id)
+        end-key (attrs/attr (last tweet-hdrs) :data-id)
+        url (str "/read-tweet-page/" list-name "/" start-key "/" end-key)]
+    (.stopPropagation event)
+    (.preventDefault event)
+    (xhr/send url handle-page-read-response "PUT")))
 
 (defn handle-refresh-click
   [_]
@@ -136,7 +152,6 @@
       (dom/remove-class! act :active))
     ;; first is our node so our parent is second node
     (-> target dom/ancestor-nodes second (dom/add-class! :active))
-    (.log js/console target)
     (get-twitter-list target)))
 
 (defn ^:export main []

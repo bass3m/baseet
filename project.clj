@@ -4,6 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :source-paths ["src-clj"]
+  :min-lein-version "2.0.0"
   :main baseet.core
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [ring/ring-core "1.2.0-RC1"]

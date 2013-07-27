@@ -129,8 +129,12 @@
        [:span.muted [:em (:list-name (first tweets))]]]
       [:small.span3.muted {:style "font-size:103%;margin-top:2.6%;text-align:right;"}
        [:div.btn-group {:style "margin-right:1%;"}
-        [:a.btn.btn-small {:href "#"} [:i.icon-repeat.refresh]]
-        [:a.btn.btn-small {:href "#"} [:i.icon-check-sign.page-read]]]
+        [:a.btn.btn-small.refresh {:href "#" :data-toggle "tooltip" :data-placement "left"
+                           :data-original-title "Refresh tweets"}
+         [:i.icon-repeat.refresh]]
+        [:a.btn.btn-small.page-read {:href "#" :data-toggle "tooltip" :data-placement "right"
+                           :data-original-title "Mark Page as Read"}
+         [:i.icon-check-sign.page-read]]]
        [:span "  Unread  "] [:span.unread-count {:style "color: #0088cc;"} total-tw]]]]
     [:div.span9 {:style "margin-left:0px;"}
      [:ul.pager

@@ -2,6 +2,7 @@
 /lib
 /classes
 /checkouts
+/tmp
 pom.xml
 pom.xml.asc
 *.jar
@@ -11,4 +12,6 @@ pom.xml.asc
 .lein-plugins
 .lein-repl-history
 *.swp
-
+*.swo
+/.lein-*
+/.env

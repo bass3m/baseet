@@ -113,6 +113,8 @@
     (dom/listen! (sel1 :.next) :click handle-pager-click)
     (dom/listen! (sel1 :.refresh) :click handle-refresh-click)
     (dom/listen! (sel1 :.page-read) :click handle-page-read-click)
+    (.tooltip (js/jQuery (str ".btn.refresh")))
+    (.tooltip (js/jQuery (str ".btn.page-read")))
     (doall
       (map #(dom/listen! % :click handle-mark-tweet-state-click) (sel :.check-box)))
     (doall

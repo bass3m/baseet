@@ -132,9 +132,12 @@
         [:a.btn.btn-small.refresh {:href "#" :data-toggle "tooltip" :data-placement "left"
                            :data-original-title "Refresh tweets"}
          [:i.icon-repeat.refresh]]
-        [:a.btn.btn-small.page-read {:href "#" :data-toggle "tooltip" :data-placement "right"
+        [:a.btn.btn-small.page-read {:href "#" :data-toggle "tooltip" :data-placement "bottom"
                            :data-original-title "Mark Page as Read"}
-         [:i.icon-check-sign.page-read]]]
+         [:i.icon-check.page-read]]
+        [:a.btn.btn-small.rest-list-read {:href "#" :data-toggle "tooltip" :data-placement "right"
+                           :data-original-title "Mark Rest as Read"}
+         [:i.icon-check-sign.rest-list-read]]]
        [:span "  Unread  "] [:span.unread-count {:style "color: #0088cc;"} total-tw]]]]
     [:div.span9 {:style "margin-left:0px;"}
      [:ul.pager

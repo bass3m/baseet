@@ -135,9 +135,9 @@
         [:a.btn.btn-small.page-read {:href "#" :data-toggle "tooltip" :data-placement "bottom"
                            :data-original-title "Mark Page as Read"}
          [:i.icon-check.page-read]]
-        [:a.btn.btn-small.rest-list-read {:href "#" :data-toggle "tooltip" :data-placement "right"
+        [:a.btn.btn-small.list-read {:href "#" :data-toggle "tooltip" :data-placement "right"
                            :data-original-title "Mark Rest as Read"}
-         [:i.icon-check-sign.rest-list-read]]]
+         [:i.icon-check-sign.list-read]]]
        [:span "  Unread  "] [:span.unread-count {:style "color: #0088cc;"} total-tw]]]]
     [:div.span9 {:style "margin-left:0px;"}
      [:ul.pager
@@ -161,10 +161,8 @@
   req)
 
 ;; for nor, not much
-(defn read-tweet-page
+(defn mark-many
   [_]
   {:update "ok"})
-
-;(defn mark-list-read [list-id])
 
 ;(defn mark-all-read [])

@@ -284,16 +284,26 @@
                               (assoc _ :_rev (:_rev _))
                               (assoc _ :_id (:_id _))))))
 
-(defn read-tweet-page
+(defn mark-many
   "Mark the whole page of tweets to read"
   [page-params ctx]
   (let [db-name (-> ctx :db-params :db-name)
         doc-id (str (:list-name page-params) "-unread")
-        start-doc (-> db-name (db/get-document (:start page-params)) :unique-score)
-        end-doc (-> db-name (db/get-document (:end page-params)) :unique-score)]
+        start-doc (-> db-name
+                      (db/get-document (:start page-params))
+                      :unique-score)
+        end-doc (if (= "0" (:end page-params))
+                  (-> db-name
+                      (db/get-view doc-id
+                                   (keyword (str doc-id "-tweets")) {:limit 1})
+                      first
+                      :key)
+                   (-> db-name
+                       (db/get-document (:end page-params))
+                       :unique-score))]
     (as-> db-name _
         (db/get-view _ doc-id (keyword (str doc-id "-tweets"))
-                     {:descending true :limit 10
+                     {:descending true 
                       :startkey (str start-doc) :endkey (str end-doc)})
         (reduce (fn [updates tweet]
                   (conj updates (-> tweet
@@ -301,7 +311,5 @@
                                     (assoc :unread false))))
                 [] _)
         (db/bulk-update db-name _))))
-
-;(defn mark-list-read [list-id])
 
 ;(defn mark-all-read [])

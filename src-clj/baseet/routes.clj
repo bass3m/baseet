@@ -58,12 +58,12 @@
     (PUT "/read-tweet/:id" [id] (as-> id _
                                       (m/mark-tweet-read _ ctx)
                                       (v/mark-tweet-read _)))
-    (PUT ["/read-tweet-page/:list-name/:start/:end"
+    (PUT ["/mark-many/:list-name/:start/:end"
           :list-name #"\D+" :start #"\w+" :end #"\w+"]
          [& page-params]
          (as-> page-params _
-              (m/read-tweet-page _ ctx)
-              (v/read-tweet-page _)))
+              (m/mark-many _ ctx)
+              (v/mark-many _)))
     (PUT ["/toggle-tweet-state/:id" :id #"\w+"] [id]
          (-> id
              (m/toggle-tweet-state ctx)

@@ -93,7 +93,7 @@
         list-name (-> tw-list (attrs/attr :data-list-name))
         start-key (attrs/attr (first tweet-hdrs) :data-id)
         end-key (attrs/attr (last tweet-hdrs) :data-id)
-        url (str "/read-tweet-page/" list-name "/" start-key "/" end-key)]
+        url (str "/mark-many/" list-name "/" start-key "/" end-key)]
     (.stopPropagation event)
     (.preventDefault event)
     (xhr/send url handle-page-read-response "PUT")))
@@ -101,6 +101,17 @@
 (defn handle-refresh-click
   [_]
   (get-twitter-list (.-firstChild (sel1 :.tw-list.active))))
+
+(defn handle-list-read-click
+  [event]
+  (let [tweet-hdrs (sel :.tweet-hdr)
+        tw-list (-> (sel1 :.tw-list.active) .-childNodes (.item 0))
+        list-name (-> tw-list (attrs/attr :data-list-name))
+        start-key (attrs/attr (first tweet-hdrs) :data-id)
+        url (str "/mark-many/" list-name "/" start-key "/0")]
+    (.stopPropagation event)
+    (.preventDefault event)
+    (xhr/send url (comp handle-refresh-click handle-page-read-response) "PUT")))
 
 (defn handle-tw-list-response
   "Receive tweets back from server, replace our current view. Add click
@@ -113,8 +124,10 @@
     (dom/listen! (sel1 :.next) :click handle-pager-click)
     (dom/listen! (sel1 :.refresh) :click handle-refresh-click)
     (dom/listen! (sel1 :.page-read) :click handle-page-read-click)
+    (dom/listen! (sel1 :.list-read) :click handle-list-read-click)
     (.tooltip (js/jQuery (str ".btn.refresh")))
     (.tooltip (js/jQuery (str ".btn.page-read")))
+    (.tooltip (js/jQuery (str ".btn.list-read")))
     (doall
       (map #(dom/listen! % :click handle-mark-tweet-state-click) (sel :.check-box)))
     (doall

@@ -9,10 +9,10 @@
 (defn get-twitter-cfg
   "Get twitter params from environ variables"
   []
-  [(System/getenv "app-consumer-key")
-   (System/getenv "app-consumer-secret")
-   (System/getenv "access-token-key")
-   (System/getenv "acess-token-secret")])
+  [(System/getenv "APP_CONSUMER_KEY")
+   (System/getenv "APP_CONSUMER_SECRET")
+   (System/getenv "ACCESS_TOKEN_KEY")
+   (System/getenv "ACCESS_TOKEN_SECRET")])
 
 (defn default-server-params []
   (->DefaultServerParams (Integer. (System/getenv "PORT"))))
@@ -26,4 +26,4 @@
   (map->DefaultCfg {:server-params (default-server-params)
                     :db-params (default-db-params)
                     :twitter-params (->> (get-twitter-cfg)
-                                        (apply suweet/make-twitter-creds))}))
+                                         (apply suweet/make-twitter-creds))}))

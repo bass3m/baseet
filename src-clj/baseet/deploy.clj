@@ -15,7 +15,7 @@
    (System/getenv "acess-token-secret")])
 
 (defn default-server-params []
-  (->DefaultServerParams (System/getenv "PORT")))
+  (->DefaultServerParams (Integer. (System/getenv "PORT"))))
 
 (defn default-db-params []
   (map->DefaultDbParams {:db-type :couch

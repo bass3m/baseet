@@ -1,5 +1,6 @@
 (ns baseet.server
   (:require [ring.adapter.jetty :as jetty :only (run-jetty)]
+            [ring.middleware.json-params :as ring-params :only (wrap-json-params)]
             [compojure.handler :as handler :only (site)]
             [baseet.lifecycle :as life :only (Lifecycle)]
             [baseet.routes :as routes :only (app)]))
@@ -29,9 +30,18 @@
   (start [_] (start svr))
   (stop [_] (stop svr)))
 
+(defn wrap-dir-index
+  "For now, rewrite to lists by default"
+  [handler]
+  (fn [req]
+    (handler (update-in req [:uri]
+                        #(if (= "/" %) "/lists" %)))))
+
 (defn web-server-init [config]
   (->WebServer (atom #(jetty/run-jetty
-                        (-> config 
-                            routes/app 
+                        (-> config
+                            routes/app
+                            wrap-dir-index
+                            (ring-params/wrap-json-params)
                             handler/site)
                         {:port (-> config :server-params :port) :join? false}))))

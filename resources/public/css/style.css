@@ -27,7 +27,7 @@ body {
     background-size: cover;
 }
 #main_page {
-    background-image:url(../img/onion_bw-3.jpg); 
+    background-image:url(../img/onion_bw-3.jpg);
 }
 .content {
     padding: 15px 30px 20px;
@@ -40,48 +40,31 @@ body {
 }
 form {
     width: 36%;
-    border: 1px solid #666; 
+    border: 1px solid #666;
     border-radius: 7px;
     box-shadow: .2em .2em .5em #999;
-    background-color:#d0e9f6; 
+    background-color:#d0e9f6;
     padding: 0.6em;
     overflow: hidden;
     float: right;
     margin-top: 20px;
 }
-form input#subscriber_email {
-  float: left;
-  margin-top: 5px;
-  width: 85px;
-  height: 15px;
-}
-form input#email_delivery_time {
-  margin-top: 5px;
-  width: 80px;
-}
 label {
-    display: block; 
+    display: block;
     float: left;
-    width: 10em; 
-    text-align: right; 
-    margin-right: .5em; 
+    width: 10em;
+    text-align: right;
+    margin-right: .5em;
     color: #04699d;
 }
-#segment_id {
-    width: 10em;
-    height: 2em;
-    border: 1px solid #666;
-    font-family: Georgia, "Times New Roman", Times, serif;
-    font-size: .875em;
-}
-input[type="submit"] { 
+input[type="submit"] {
     display: block;
     /*width: 7em;*/
     /*height: 2em;*/
     float: right;
     background: white;
     font-size: inherit;
-    border: 1px solid #04699d; 
+    border: 1px solid #04699d;
     border-radius: 4px;
     box-shadow: 2px 2px 3px rgba(0,0,0,.5);
     margin-left: 0px;
@@ -123,7 +106,7 @@ a.button.delete
 }
 .button:hover
 {
-    background-color: #ddd;        
+    background-color: #ddd;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#ddd));
     background-image: -webkit-linear-gradient(top, #fafafa, #ddd);
     background-image: -moz-linear-gradient(top, #fafafa, #ddd);
@@ -145,13 +128,13 @@ a.button.delete
 {
     outline: 0;
     background: #fafafa;
-}    
+}
 
 .button:before
 {
     background: #ccc;
     background: rgba(0,0,0,.1);
-    float: left;        
+    float: left;
     width: 0.8em;
     text-align: center;
     font-size: 1em;
@@ -167,27 +150,27 @@ a.button.delete
 }
 
 /* Buttons and inputs */
-button.button, input.button 
-{ 
+button.button, input.button
+{
   cursor: pointer;
   overflow: visible; /* removes extra side spacing in IE */
 }
 
 /* removes extra inner spacing in Firefox */
-button::-moz-focus-inner 
+button::-moz-focus-inner
 {
   border: 0;
   padding: 0;
 }
 
 /* If line-height can't be modified, then fix Firefox spacing with padding */
-input::-moz-focus-inner 
+input::-moz-focus-inner
 {
   padding: .4em;
 }
 
 /* The disabled styles */
-.button[disabled], .button[disabled]:hover, .button.disabled, .button.disabled:hover 
+.button[disabled], .button[disabled]:hover, .button.disabled, .button.disabled:hover
 {
   background: #eee;
   color: #aaa;
@@ -197,7 +180,7 @@ input::-moz-focus-inner
   position: static;
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
-  box-shadow: none;   
+  box-shadow: none;
 }
 
 /* checkbox */
@@ -247,4 +230,21 @@ input::-moz-focus-inner
     -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     filter: alpha(opacity=100);
     opacity: 1;
+}
+
+.persona-signin {
+  max-width: 300px;
+  padding: 19px 29px 29px;
+  margin: 0 auto 20px;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+}
+.persona-signin .persona-signin-header {
+  margin-bottom: 10px;
 }

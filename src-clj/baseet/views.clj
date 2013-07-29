@@ -1,35 +1,7 @@
 (ns baseet.views
-  (:require [clj-time.core :as clj-time :only (interval now in-years in-months
-                                               in-weeks in-days in-hours
-                                               in-minutes in-secs)]
-            [clj-time.format :as time-fmt :only (parse formatter)]
+  (:require [baseet.utils :as utils :only (time-ago-in-words)]
             [hiccup.core :refer [html]]
             [hiccup.page :refer [include-css include-js]]))
-
-(defn time-ago-in-words
-  "Display a more humanly readable time stamp. Twitter uses something similar
-  to RFC 822 but not quite, so we need our own time formatter."
-  [timestamp]
-  (let [created-at (time-fmt/parse
-                     (time-fmt/formatter "EEE MMM dd HH:mm:ss Z yyyy")
-                     timestamp)
-        interval (clj-time/interval created-at (clj-time/now))
-        time-interval-map (zipmap [clj-time/in-secs  clj-time/in-minutes
-                                   clj-time/in-hours clj-time/in-days
-                                   clj-time/in-weeks clj-time/in-months
-                                   clj-time/in-years]
-                                  ["sec" "minute" "hour" "day"
-                                   "week" "month" "year"])]
-    (loop [interval-map time-interval-map]
-      (if (nil? (first interval-map))
-        interval
-        (let [time-span ((key (first interval-map)) interval)]
-          (if (pos? time-span)
-            (let [time-str (val (first interval-map))]
-              (clojure.string/join " " [time-span
-                                        (cond-> time-str
-                                          (> time-span 1) (str "s")) "ago"]))
-            (recur (next interval-map))))))))
 
 (defn render-tw-list
   [tw-list]
@@ -84,7 +56,7 @@
        [:div.span2 [:i.icon-retweet] [:span (:rt-counts tweet)]]
        [:div.span2 [:i.icon-star] [:span (:fav-counts tweet)]]
        [:div.span2 [:i.icon-user] [:span (:follow-count tweet)]]]
-      [:div.span3.text-right [:em (time-ago-in-words (:created-at tweet))]]
+      [:div.span3.text-right [:em (utils/time-ago-in-words (:created-at tweet))]]
       [:p (str (first (:text tweet)))]
       (when (seq (:url tweet))
         [:small
@@ -106,7 +78,7 @@
            [:a {:href (str "#" modal-id) :class "btn"
                 :role "button" :data-id modal-id  :data-summarized "false"
                 :data-toggle "modal"} "Summarize"]
-           [:a {:href (:url tweet) :style (str "margin-left:5px;")}
+           [:a {:href (:url tweet) :target "_blank" :style (str "margin-left:5px;")}
             (str (:url tweet))]])])]]])
 
 (defn pager-view
@@ -166,3 +138,22 @@
   {:update "ok"})
 
 ;(defn mark-all-read [])
+
+(defn login
+  "Display login page"
+  [request]
+  (html
+    [:head
+      [:title "Please login"]
+      [:meta  {:charset "utf-8"}]
+      [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
+      (include-css "/bootstrap/css/bootstrap.min.css")
+      (include-css "/font-awesome/css/font-awesome.min.css")
+      (include-css "/css/style.css")
+      (include-css "/persona-css-buttons/persona-buttons.css")
+      (include-css "/bootstrap/css/bootstrap-responsive.min.css")]
+    [:body {:style "padding-top: 40px; padding-bottom: 40px; background-color: #f5f5f5;"}
+     [:div.container
+      [:div.persona-signin
+       [:h2.persona-signin-header "Please Sign In"]
+       [:a.persona-button {:href "#"} [:span "Sign In"]]]]]))

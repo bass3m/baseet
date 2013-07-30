@@ -12,10 +12,10 @@
 
 (defrecord DefaultCfg [cfg-file server-params db-params])
 (defrecord DefaultDbParams [db-type db-name views])
-(defrecord DefaultServerParams [port])
+(defrecord DefaultServerParams [hostname port])
 
 (defn default-server-params []
-  (->DefaultServerParams 7623))
+  (->DefaultServerParams "http://localhost" 7623))
 
 (defn default-db-params []
   (map->DefaultDbParams {:db-type :couch

@@ -4,7 +4,7 @@
 
 (defrecord DefaultCfg [server-params db-params])
 (defrecord DefaultDbParams [db-type db-name views])
-(defrecord DefaultServerParams [port])
+(defrecord DefaultServerParams [hostname port])
 
 (defn get-twitter-cfg
   "Get twitter params from environ variables"
@@ -15,7 +15,9 @@
    (System/getenv "ACCESS_TOKEN_SECRET")])
 
 (defn default-server-params []
-  (->DefaultServerParams (Integer. (System/getenv "PORT"))))
+  (->DefaultServerParams
+    (System/getenv "PERSONA_HOSTNAME")
+    (Integer. (System/getenv "PORT"))))
 
 (defn default-db-params []
   (map->DefaultDbParams {:db-type :couch

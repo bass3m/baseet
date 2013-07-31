@@ -1,9 +1,10 @@
 (ns baseet.server
   (:require [ring.adapter.jetty :as jetty :only (run-jetty)]
             [ring.middleware.json-params :as ring-params :only (wrap-json-params)]
-            [compojure.handler :as handler :only (site)]
+            [compojure.handler :as handler :only (api)]
+            [noir.util.middleware :as noir]
             [baseet.lifecycle :as life :only (Lifecycle)]
-            [baseet.routes :as routes :only (app)]))
+            [baseet.routes :as routes :only (app logged-in?)]))
 
 (defn start
   "Start our web server"
@@ -38,10 +39,12 @@
                         #(if (= "/" %) "/lists" %)))))
 
 (defn web-server-init [config]
-  (->WebServer (atom #(jetty/run-jetty
-                        (-> config
-                            routes/app
-                            wrap-dir-index
-                            (ring-params/wrap-json-params)
-                            handler/site)
-                        {:port (-> config :server-params :port) :join? false}))))
+  (->WebServer (atom #(jetty/run-jetty (noir/app-handler
+                                         [(-> config
+                                              routes/app
+                                              ;wrap-dir-index
+                                              (ring-params/wrap-json-params)
+                                              handler/api)]
+                                         :access-rules [{:rules [routes/logged-in?]}])
+                                       {:port (-> config :server-params :port)
+                                        :join? false}))))

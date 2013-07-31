@@ -21,6 +21,7 @@
       (include-css "/bootstrap/css/bootstrap.min.css")
       (include-css "/font-awesome/css/font-awesome.min.css")
       (include-css "/css/style.css")
+      (include-css "/persona-css-buttons/persona-buttons.css")
       (include-css "/bootstrap/css/bootstrap-responsive.min.css")]
     [:body]
     [:div.container-fluid
@@ -30,7 +31,11 @@
                    (map render-tw-list request)]]
       [:div.span10 [:div.well {:style (str "margin-top:5%;" "text-align:center;")}
                     [:h4 "My Twitter Lists"]
-                    [:p "Select a list to view the highest scoring tweets"]]]]]
+                    [:p "Select a list to view the highest scoring tweets"]]]]
+      [:div.row-fluid.clearfix.pull-left {:style "padding-top:15%;"}
+       [:div.span2.persona-logout
+       [:a.persona-button {:href "#" :style "font-size:11px;"} [:span "Log Out"]]]]]
+
     (include-js "/js/main.js")
     ;; need to find a better way than use harcoded name
     [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]
@@ -137,9 +142,7 @@
   [_]
   {:update "ok"})
 
-;(defn mark-all-read [])
-
-(defn login
+(defn render-login
   "Display login page"
   [request]
   (html
@@ -147,6 +150,8 @@
       [:title "Please login"]
       [:meta  {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
+      ;; needed by persona
+      [:meta {:http-equiv "X-UA-Compatible" :content "IE=Edge"}]
       (include-css "/bootstrap/css/bootstrap.min.css")
       (include-css "/font-awesome/css/font-awesome.min.css")
       (include-css "/css/style.css")
@@ -156,4 +161,7 @@
      [:div.container
       [:div.persona-signin
        [:h2.persona-signin-header "Please Sign In"]
-       [:a.persona-button {:href "#"} [:span "Sign In"]]]]]))
+       [:a.persona-button {:href "#"} [:span "Sign In"]]]]]
+    (include-js "https://login.persona.org/include.js")
+    (include-js "/js/main.js")
+    [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]))

@@ -35,7 +35,7 @@
     ;(POST "/test" {params :params} (do (with-out-str (clojure.pprint/pprint params))
                               ;(v/test-session params)))
     (POST "/login" {params :params} (c/auth ctx params))
-    (POST "/logout" [] (c/logout))
+    (POST "/logout" request (c/logout request))
     (GET "/lists" request (restricted (-> request
                                           (m/all-twitter-lists ctx)
                                           v/all-twitter-lists)))

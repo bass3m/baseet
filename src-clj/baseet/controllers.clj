@@ -47,7 +47,7 @@
 
 (defn logout
   "Logout user, remove cookie"
-  []
+  [request]
   (session/clear!))
 
 (defn mark-tweet-read [tw-id])

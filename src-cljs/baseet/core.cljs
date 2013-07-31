@@ -4,7 +4,8 @@
             [goog.events :as events]
             [dommy.core :as dom]
             [dommy.template :as t]
-            [dommy.attrs :as attrs]))
+            [dommy.attrs :as attrs]
+            [baseet.auth :as auth]))
 
 (defn log [& more]
   (binding [*print-fn* #(.log js/console %)]
@@ -169,9 +170,16 @@
     (-> target dom/ancestor-nodes second (dom/add-class! :active))
     (get-twitter-list target)))
 
+(defn handle-all-twitter-lists
+  "Listen for the navlist"
+  [user]
+  (doall
+    (map #(dom/listen! % :click handle-tw-list-click) (sel :.tw-list))))
+
 (defn ^:export main []
   "Our main function, called from html file. Google closure doesn't have
   an onready type event, so we have to resort to this."
   (log "Starting app")
-  (doall
-    (map #(dom/listen! % :click handle-tw-list-click) (sel :.tw-list))))
+  (let [user (auth/user-init)]
+    (auth/auth-init user)
+    (handle-all-twitter-lists user)))

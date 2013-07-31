@@ -21,7 +21,6 @@
       (include-css "/bootstrap/css/bootstrap.min.css")
       (include-css "/font-awesome/css/font-awesome.min.css")
       (include-css "/css/style.css")
-      (include-css "/persona-css-buttons/persona-buttons.css")
       (include-css "/bootstrap/css/bootstrap-responsive.min.css")]
     [:body]
     [:div.container-fluid
@@ -31,11 +30,7 @@
                    (map render-tw-list request)]]
       [:div.span10 [:div.well {:style (str "margin-top:5%;" "text-align:center;")}
                     [:h4 "My Twitter Lists"]
-                    [:p "Select a list to view the highest scoring tweets"]]]]
-      [:div.row-fluid.clearfix.pull-left {:style "padding-top:15%;"}
-       [:div.span2.persona-logout
-       [:a.persona-button {:href "#" :style "font-size:11px;"} [:span "Log Out"]]]]]
-
+                    [:p "Select a list to view the highest scoring tweets"]]]]]
     (include-js "/js/main.js")
     ;; need to find a better way than use harcoded name
     [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]

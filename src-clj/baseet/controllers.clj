@@ -23,8 +23,7 @@
   (http/post "https://verifier.login.persona.org/verify"
              {:form-params
               {:assertion (-> params first val)
-               :audience (str (-> ctx :server-params :hostname) ":"
-                              (-> ctx :server-params :port))}}))
+               :audience (-> ctx :server-params :hostname)}}))
 
 (defn auth
   "Authenticate user with persona"
@@ -40,6 +39,8 @@
       {:status 401})))
 
 (defn login
+  "If we already have a session for the user, redirect to our lists page
+  otherwise display the login page"
   [request]
   (if (session/get :user)
     (response/redirect "/lists")

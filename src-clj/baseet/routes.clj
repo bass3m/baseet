@@ -30,10 +30,7 @@
 ;; PUT "/all-done" => all-done : mark all lists read
 (defn app [ctx]
   (routes
-    ;; TODO if we're logged in then redirect to lists, otherwise go to login
     (GET "/" request (c/login request))
-    ;(POST "/test" {params :params} (do (with-out-str (clojure.pprint/pprint params))
-                              ;(v/test-session params)))
     (POST "/login" {params :params} (c/auth ctx params))
     (POST "/logout" request (c/logout request))
     (GET "/lists" request (restricted (-> request

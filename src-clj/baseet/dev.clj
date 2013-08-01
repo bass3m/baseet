@@ -15,7 +15,7 @@
 (defrecord DefaultServerParams [hostname port])
 
 (defn default-server-params []
-  (->DefaultServerParams "http://localhost" 7623))
+  (->DefaultServerParams "http://localhost:7623" 7623))
 
 (defn default-db-params []
   (map->DefaultDbParams {:db-type :couch

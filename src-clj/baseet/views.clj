@@ -34,7 +34,7 @@
     (include-js "/js/main.js")
     ;; need to find a better way than use harcoded name
     [:script {:type "text/javascript" :language "javascript"} "baseet.core.main()"]
-    (include-js "http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js")
+    (include-js "/jquery/1.10.1/jquery.min.js")
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
 (defn render-tweet

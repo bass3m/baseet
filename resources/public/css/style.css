@@ -26,9 +26,6 @@ body {
     margin: auto;
     background-size: cover;
 }
-#main_page {
-    background-image:url(../img/onion_bw-3.jpg);
-}
 .content {
     padding: 15px 30px 20px;
     float:left;
@@ -38,17 +35,6 @@ body {
     box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
 }
-form {
-    width: 36%;
-    border: 1px solid #666;
-    border-radius: 7px;
-    box-shadow: .2em .2em .5em #999;
-    background-color:#d0e9f6;
-    padding: 0.6em;
-    overflow: hidden;
-    float: right;
-    margin-top: 20px;
-}
 label {
     display: block;
     float: left;
@@ -57,22 +43,6 @@ label {
     margin-right: .5em;
     color: #04699d;
 }
-input[type="submit"] {
-    display: block;
-    /*width: 7em;*/
-    /*height: 2em;*/
-    float: right;
-    background: white;
-    font-size: inherit;
-    border: 1px solid #04699d;
-    border-radius: 4px;
-    box-shadow: 2px 2px 3px rgba(0,0,0,.5);
-    margin-left: 0px;
-    /*margin-right: 1em;*/
-    color: #C00; /* the submit button text is attention-getting red */
-}
-
-
 /* Styling for button */
 .button
 {
@@ -247,4 +217,9 @@ input::-moz-focus-inner
 }
 .persona-signin .persona-signin-header {
   margin-bottom: 10px;
+}
+
+.save {
+  padding: 0px 3px;
+  margin-top: 3px;
 }

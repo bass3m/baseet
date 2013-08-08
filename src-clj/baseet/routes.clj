@@ -49,5 +49,11 @@
          (restricted (-> id
                          (m/toggle-tweet-state ctx)
                          v/toggle-tweet-state)))
+    (PUT ["/save-tweet/:id" :id #"\w+"] [id]
+         (restricted (-> id
+                         (c/save-tweet ctx)
+                         (m/save-tweet ctx)
+                         v/save-tweet)))
+
     (route/resources "/") ;; XXX is this needed ?
     (route/not-found "Sorry, there's nothing here.")))

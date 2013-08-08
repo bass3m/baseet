@@ -54,6 +54,17 @@
   (-> (-> ctx :db-params :db-name)
       (db/get-document tw-id)))
 
+(defn save-tweet
+  "Save tweet url"
+  [id ctx]
+  (let [db-name (-> ctx :db-params :db-name)
+        tweet (db/get-document db-name id)]
+    (db/update-document db-name
+                        (as-> (db/get-document db-name id) _
+                              (assoc _ :save true)
+                              (assoc _ :_rev (:_rev _))
+                              (assoc _ :_id (:_id _))))))
+
 (defn toggle-tweet-state
   "Mark the tweet as read or unread"
   [id ctx]

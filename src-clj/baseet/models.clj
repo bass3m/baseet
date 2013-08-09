@@ -1,6 +1,7 @@
 (ns baseet.models
   (:require [com.ashafa.clutch :as db]
-            [baseet-twdb.tweetdb :as twdb]))
+            [baseet-twdb.tweetdb :as twdb]
+            [baseet.controllers :as c :only (save-tweet)]))
 
 ;; make the 11 limit configurable
 (defn a-twitter-list
@@ -59,11 +60,17 @@
   [id ctx]
   (let [db-name (-> ctx :db-params :db-name)
         tweet (db/get-document db-name id)]
-    (db/update-document db-name
-                        (as-> (db/get-document db-name id) _
+    (when (false? (:save tweet))
+      (let [saved-item (c/save-tweet (:url tweet) (:id tweet) ctx)]
+        (db/update-document db-name
+                            (as-> tweet _
                               (assoc _ :save true)
+                              (assoc _ :url (:url saved-item))
+                              (assoc _ :pocket-item-id (:item-id saved-item))
+                              (assoc _ :excerpt (:excerpt saved-item))
+                              (assoc _ :title (:title saved-item))
                               (assoc _ :_rev (:_rev _))
-                              (assoc _ :_id (:_id _))))))
+                              (assoc _ :_id (:_id _))))))))
 
 (defn toggle-tweet-state
   "Mark the tweet as read or unread"

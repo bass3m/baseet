@@ -51,7 +51,6 @@
                          v/toggle-tweet-state)))
     (PUT ["/save-tweet/:id" :id #"\w+"] [id]
          (restricted (-> id
-                         (c/save-tweet ctx)
                          (m/save-tweet ctx)
                          v/save-tweet)))
 

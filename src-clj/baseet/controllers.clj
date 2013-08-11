@@ -51,7 +51,25 @@
   [request]
   (session/clear!))
 
-(defn mark-tweet-read [tw-id])
+(defn save-tweet
+  "Save tweet url"
+  [url tw-id ctx]
+  (let [body (json/write-str {:url url
+                              :tweet_id (str tw-id)
+                              :access_token (-> ctx :pocket-params :access-token)
+                              :consumer_key (-> ctx :pocket-params :consumer-key)})]
+    (when-let [save-resp (try
+                           (http/post "https://getpocket.com/v3/add"
+                                      {:headers {"Content-Type" "application/json;charset=utf-8"
+                                                 "X-Accept" "application/json"}
+                                       :body body})
+                           (catch Exception e nil))]
+      (let [saved-item (-> save-resp :body (json/read-str :key-fn keyword) :item)]
+        {:item-id (:item_id saved-item)
+         :excerpt (:excerpt saved-item)
+         :title (:title saved-item)
+         :url (or (:resolved_url saved-item)
+                  (:normal_url saved-item))}))))
 
 (defn mark-list-read [list-id])
 

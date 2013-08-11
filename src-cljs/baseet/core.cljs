@@ -74,6 +74,28 @@
     (.preventDefault event)
     (xhr/send url (partial toggle-tweet-state parent) "PUT")))
 
+(defn handle-save-url-response
+  "Handle response back from server for saving a url"
+  [parent resp]
+  (let [target (.-target resp)
+        tweet (-> target .getResponseText)]
+    (when tweet
+      (dom/replace-contents! parent (t/html->nodes tweet))
+      (dom/listen! (sel1 parent :.check-box) :click handle-mark-tweet-state-click)
+      (dom/listen! (sel1 parent :.modal-id) :click handle-summarize-click))))
+
+(defn handle-save-url-click
+  "Save url by sending request to server"
+  [event]
+  (let [target (.-target event)
+        parent (->> target dom/ancestor-nodes (take 6) (drop 5) first)
+        tweet-id (attrs/attr (-> target .-parentNode .-firstChild) :id)
+        url (str "save-tweet/" tweet-id)]
+    (.stopPropagation event)
+    (.preventDefault event)
+    (when (seq (re-seq #"save" (.-className target)))
+      (xhr/send url (partial handle-save-url-response parent) "PUT"))))
+
 ;; forward declarations since we reuse ajax handlers
 (declare handle-pager-click get-twitter-list)
 
@@ -131,6 +153,8 @@
     (.tooltip (js/jQuery (str ".btn.list-read")))
     (doall
       (map #(dom/listen! % :click handle-mark-tweet-state-click) (sel :.check-box)))
+    (doall
+      (map #(dom/listen! % :click handle-save-url-click) (sel :.save)))
     (doall
       (map #(dom/listen! % :click handle-summarize-click) (sel :.modal-id)))))
 

@@ -28452,26 +28452,26 @@ baseet.auth.User.prototype.cljs$core$ILookup$_lookup$arity$2 = function(this__26
   var self__ = this;
   return this__2684__auto__.cljs$core$ILookup$_lookup$arity$3(this__2684__auto__, k__2685__auto__, null)
 };
-baseet.auth.User.prototype.cljs$core$ILookup$_lookup$arity$3 = function(this__2686__auto__, k433215, else__2687__auto__) {
+baseet.auth.User.prototype.cljs$core$ILookup$_lookup$arity$3 = function(this__2686__auto__, k433782, else__2687__auto__) {
   var self__ = this;
-  if(k433215 === "\ufdd0:email") {
+  if(k433782 === "\ufdd0:email") {
     return self__.email
   }else {
     if("\ufdd0:else") {
-      return cljs.core.get.call(null, self__.__extmap, k433215, else__2687__auto__)
+      return cljs.core.get.call(null, self__.__extmap, k433782, else__2687__auto__)
     }else {
       return null
     }
   }
 };
-baseet.auth.User.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(this__2691__auto__, k__2692__auto__, G__433214) {
+baseet.auth.User.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(this__2691__auto__, k__2692__auto__, G__433781) {
   var self__ = this;
-  var pred__433217 = cljs.core.identical_QMARK_;
-  var expr__433218 = k__2692__auto__;
-  if(pred__433217.call(null, "\ufdd0:email", expr__433218)) {
-    return new baseet.auth.User(G__433214, self__.__meta, self__.__extmap, null)
+  var pred__433784 = cljs.core.identical_QMARK_;
+  var expr__433785 = k__2692__auto__;
+  if(pred__433784.call(null, "\ufdd0:email", expr__433785)) {
+    return new baseet.auth.User(G__433781, self__.__meta, self__.__extmap, null)
   }else {
-    return new baseet.auth.User(self__.email, self__.__meta, cljs.core.assoc.call(null, self__.__extmap, k__2692__auto__, G__433214), null)
+    return new baseet.auth.User(self__.email, self__.__meta, cljs.core.assoc.call(null, self__.__extmap, k__2692__auto__, G__433781), null)
   }
 };
 baseet.auth.User.prototype.cljs$core$IPrintWithWriter$_pr_writer$arity$3 = function(this__2698__auto__, writer__2699__auto__, opts__2700__auto__) {
@@ -28517,9 +28517,9 @@ baseet.auth.User.prototype.cljs$core$IEquiv$_equiv$arity$2 = function(this__2680
     return false
   }
 };
-baseet.auth.User.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(this__2683__auto__, G__433214) {
+baseet.auth.User.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(this__2683__auto__, G__433781) {
   var self__ = this;
-  return new baseet.auth.User(self__.email, G__433214, self__.__extmap, self__.__hash)
+  return new baseet.auth.User(self__.email, G__433781, self__.__extmap, self__.__hash)
 };
 baseet.auth.User.prototype.cljs$core$IMeta$_meta$arity$1 = function(this__2682__auto__) {
   var self__ = this;
@@ -28543,8 +28543,8 @@ baseet.auth.User.cljs$lang$ctorPrWriter = function(this__2718__auto__, writer__2
 baseet.auth.__GT_User = function __GT_User(email) {
   return new baseet.auth.User(email)
 };
-baseet.auth.map__GT_User = function map__GT_User(G__433216) {
-  return new baseet.auth.User((new cljs.core.Keyword("\ufdd0:email")).call(null, G__433216), null, cljs.core.dissoc.call(null, G__433216, "\ufdd0:email"))
+baseet.auth.map__GT_User = function map__GT_User(G__433783) {
+  return new baseet.auth.User((new cljs.core.Keyword("\ufdd0:email")).call(null, G__433783), null, cljs.core.dissoc.call(null, G__433783, "\ufdd0:email"))
 };
 baseet.auth.user_init = function user_init() {
   return baseet.auth.__GT_User.call(null, cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY))
@@ -28590,14 +28590,14 @@ goog.require("goog.events");
 goog.require("goog.net.XhrIo");
 baseet.core.log = function() {
   var log__delegate = function(more) {
-    var _STAR_print_fn_STAR_431483 = cljs.core._STAR_print_fn_STAR_;
+    var _STAR_print_fn_STAR_461901 = cljs.core._STAR_print_fn_STAR_;
     try {
-      cljs.core._STAR_print_fn_STAR_ = function(p1__431480_SHARP_) {
-        return console.log(p1__431480_SHARP_)
+      cljs.core._STAR_print_fn_STAR_ = function(p1__461898_SHARP_) {
+        return console.log(p1__461898_SHARP_)
       };
       return cljs.core.apply.call(null, cljs.core.pr, more)
     }finally {
-      cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_431483
+      cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_461901
     }
   };
   var log = function(var_args) {
@@ -28608,8 +28608,8 @@ baseet.core.log = function() {
     return log__delegate.call(this, more)
   };
   log.cljs$lang$maxFixedArity = 0;
-  log.cljs$lang$applyTo = function(arglist__431485) {
-    var more = cljs.core.seq(arglist__431485);
+  log.cljs$lang$applyTo = function(arglist__461903) {
+    var more = cljs.core.seq(arglist__461903);
     return log__delegate(more)
   };
   log.cljs$core$IFn$_invoke$arity$variadic = log__delegate;
@@ -28658,13 +28658,37 @@ baseet.core.handle_mark_tweet_state_click = function handle_mark_tweet_state_cli
   event.preventDefault();
   return goog.net.XhrIo.send(url, cljs.core.partial.call(null, baseet.core.toggle_tweet_state, parent), "PUT")
 };
+baseet.core.handle_save_url_response = function handle_save_url_response(parent, resp) {
+  var target = resp.target;
+  var tweet = target.getResponseText();
+  if(cljs.core.truth_(tweet)) {
+    dommy.core.replace_contents_BANG_.call(null, parent, dommy.template.html__GT_nodes.call(null, tweet));
+    dommy.core.listen_BANG_.call(null, dommy.utils.__GT_Array.call(null, dommy.template.__GT_node_like.call(null, parent).getElementsByClassName("check-box"))[0], "\ufdd0:click", baseet.core.handle_mark_tweet_state_click);
+    return dommy.core.listen_BANG_.call(null, dommy.utils.__GT_Array.call(null, dommy.template.__GT_node_like.call(null, parent).getElementsByClassName("modal-id"))[0], "\ufdd0:click", baseet.core.handle_summarize_click)
+  }else {
+    return null
+  }
+};
+baseet.core.handle_save_url_click = function handle_save_url_click(event) {
+  var target = event.target;
+  var parent = cljs.core.first.call(null, cljs.core.drop.call(null, 5, cljs.core.take.call(null, 6, dommy.core.ancestor_nodes.call(null, target))));
+  var tweet_id = dommy.attrs.attr.call(null, target.parentNode.firstChild, "\ufdd0:id");
+  var url = [cljs.core.str("save-tweet/"), cljs.core.str(tweet_id)].join("");
+  event.stopPropagation();
+  event.preventDefault();
+  if(cljs.core.seq.call(null, cljs.core.re_seq.call(null, /save/, target.className))) {
+    return goog.net.XhrIo.send(url, cljs.core.partial.call(null, baseet.core.handle_save_url_response, parent), "PUT")
+  }else {
+    return null
+  }
+};
 baseet.core.handle_page_read_response = function handle_page_read_response(_) {
   var tweet_hdrs = dommy.utils.__GT_Array.call(null, document.getElementsByClassName("tweet-hdr"));
-  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__431486_SHARP_) {
-    if(cljs.core.truth_(dommy.attrs.attr.call(null, p1__431486_SHARP_, "\ufdd0:checked"))) {
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461904_SHARP_) {
+    if(cljs.core.truth_(dommy.attrs.attr.call(null, p1__461904_SHARP_, "\ufdd0:checked"))) {
       return null
     }else {
-      return baseet.core.toggle_tweet_state.call(null, p1__431486_SHARP_.parentNode.parentNode.parentNode, _)
+      return baseet.core.toggle_tweet_state.call(null, p1__461904_SHARP_.parentNode.parentNode.parentNode, _)
     }
   }, tweet_hdrs))
 };
@@ -28704,11 +28728,14 @@ baseet.core.handle_tw_list_response = function handle_tw_list_response(event) {
   jQuery([cljs.core.str(".btn.refresh")].join("")).tooltip();
   jQuery([cljs.core.str(".btn.page-read")].join("")).tooltip();
   jQuery([cljs.core.str(".btn.list-read")].join("")).tooltip();
-  cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__431487_SHARP_) {
-    return dommy.core.listen_BANG_.call(null, p1__431487_SHARP_, "\ufdd0:click", baseet.core.handle_mark_tweet_state_click)
+  cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461905_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__461905_SHARP_, "\ufdd0:click", baseet.core.handle_mark_tweet_state_click)
   }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("check-box"))));
-  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__431488_SHARP_) {
-    return dommy.core.listen_BANG_.call(null, p1__431488_SHARP_, "\ufdd0:click", baseet.core.handle_summarize_click)
+  cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461906_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__461906_SHARP_, "\ufdd0:click", baseet.core.handle_save_url_click)
+  }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("save"))));
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461907_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__461907_SHARP_, "\ufdd0:click", baseet.core.handle_summarize_click)
   }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("modal-id"))))
 };
 baseet.core.handle_pager_click = function handle_pager_click(event) {
@@ -28740,49 +28767,49 @@ baseet.core.handle_tw_list_click = function handle_tw_list_click(event) {
   var target = event.target;
   event.stopPropagation();
   event.preventDefault();
-  var seq__431493_431497 = cljs.core.seq.call(null, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("active")));
-  var chunk__431494_431498 = null;
-  var count__431495_431499 = 0;
-  var i__431496_431500 = 0;
+  var seq__461912_461916 = cljs.core.seq.call(null, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("active")));
+  var chunk__461913_461917 = null;
+  var count__461914_461918 = 0;
+  var i__461915_461919 = 0;
   while(true) {
-    if(i__431496_431500 < count__431495_431499) {
-      var act_431501 = cljs.core._nth.call(null, chunk__431494_431498, i__431496_431500);
-      dommy.core.remove_class_BANG_.call(null, act_431501, "\ufdd0:active");
-      var G__431502 = seq__431493_431497;
-      var G__431503 = chunk__431494_431498;
-      var G__431504 = count__431495_431499;
-      var G__431505 = i__431496_431500 + 1;
-      seq__431493_431497 = G__431502;
-      chunk__431494_431498 = G__431503;
-      count__431495_431499 = G__431504;
-      i__431496_431500 = G__431505;
+    if(i__461915_461919 < count__461914_461918) {
+      var act_461920 = cljs.core._nth.call(null, chunk__461913_461917, i__461915_461919);
+      dommy.core.remove_class_BANG_.call(null, act_461920, "\ufdd0:active");
+      var G__461921 = seq__461912_461916;
+      var G__461922 = chunk__461913_461917;
+      var G__461923 = count__461914_461918;
+      var G__461924 = i__461915_461919 + 1;
+      seq__461912_461916 = G__461921;
+      chunk__461913_461917 = G__461922;
+      count__461914_461918 = G__461923;
+      i__461915_461919 = G__461924;
       continue
     }else {
-      var temp__4092__auto___431506 = cljs.core.seq.call(null, seq__431493_431497);
-      if(temp__4092__auto___431506) {
-        var seq__431493_431507__$1 = temp__4092__auto___431506;
-        if(cljs.core.chunked_seq_QMARK_.call(null, seq__431493_431507__$1)) {
-          var c__2856__auto___431508 = cljs.core.chunk_first.call(null, seq__431493_431507__$1);
-          var G__431509 = cljs.core.chunk_rest.call(null, seq__431493_431507__$1);
-          var G__431510 = c__2856__auto___431508;
-          var G__431511 = cljs.core.count.call(null, c__2856__auto___431508);
-          var G__431512 = 0;
-          seq__431493_431497 = G__431509;
-          chunk__431494_431498 = G__431510;
-          count__431495_431499 = G__431511;
-          i__431496_431500 = G__431512;
+      var temp__4092__auto___461925 = cljs.core.seq.call(null, seq__461912_461916);
+      if(temp__4092__auto___461925) {
+        var seq__461912_461926__$1 = temp__4092__auto___461925;
+        if(cljs.core.chunked_seq_QMARK_.call(null, seq__461912_461926__$1)) {
+          var c__2856__auto___461927 = cljs.core.chunk_first.call(null, seq__461912_461926__$1);
+          var G__461928 = cljs.core.chunk_rest.call(null, seq__461912_461926__$1);
+          var G__461929 = c__2856__auto___461927;
+          var G__461930 = cljs.core.count.call(null, c__2856__auto___461927);
+          var G__461931 = 0;
+          seq__461912_461916 = G__461928;
+          chunk__461913_461917 = G__461929;
+          count__461914_461918 = G__461930;
+          i__461915_461919 = G__461931;
           continue
         }else {
-          var act_431513 = cljs.core.first.call(null, seq__431493_431507__$1);
-          dommy.core.remove_class_BANG_.call(null, act_431513, "\ufdd0:active");
-          var G__431514 = cljs.core.next.call(null, seq__431493_431507__$1);
-          var G__431515 = null;
-          var G__431516 = 0;
-          var G__431517 = 0;
-          seq__431493_431497 = G__431514;
-          chunk__431494_431498 = G__431515;
-          count__431495_431499 = G__431516;
-          i__431496_431500 = G__431517;
+          var act_461932 = cljs.core.first.call(null, seq__461912_461926__$1);
+          dommy.core.remove_class_BANG_.call(null, act_461932, "\ufdd0:active");
+          var G__461933 = cljs.core.next.call(null, seq__461912_461926__$1);
+          var G__461934 = null;
+          var G__461935 = 0;
+          var G__461936 = 0;
+          seq__461912_461916 = G__461933;
+          chunk__461913_461917 = G__461934;
+          count__461914_461918 = G__461935;
+          i__461915_461919 = G__461936;
           continue
         }
       }else {
@@ -28794,8 +28821,8 @@ baseet.core.handle_tw_list_click = function handle_tw_list_click(event) {
   return baseet.core.get_twitter_list.call(null, target)
 };
 baseet.core.handle_all_twitter_lists = function handle_all_twitter_lists(user) {
-  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__431518_SHARP_) {
-    return dommy.core.listen_BANG_.call(null, p1__431518_SHARP_, "\ufdd0:click", baseet.core.handle_tw_list_click)
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461937_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__461937_SHARP_, "\ufdd0:click", baseet.core.handle_tw_list_click)
   }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("tw-list"))))
 };
 baseet.core.main = function main() {

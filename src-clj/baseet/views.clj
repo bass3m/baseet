@@ -37,24 +37,6 @@
     (include-js "/jquery/1.10.1/jquery.min.js")
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
-(defn render-saved-anchor
-  "For a saved tweet, use the excerpt as a tooltip"
-  [tweet]
-  [:a {:href (:url tweet) :target "_blank" :style (str "margin-left:5px;")
-       :data-toggle "tooltip" :data-placement "bottom"
-       :data-original-title (str (:excerpt tweet))}
-   (str (:url tweet))]
-  [:button.btn.btn-small.save.pull-right.disabled {:href "#"}
-   [:i.icon-bookmark {:style "padding-right:3px;color:#4f9fcf;"}] "saved"])
-
-(defn render-anchor
-  "For a saved tweet, use the excerpt as a tooltip"
-  [tweet]
-  [:a {:href (:url tweet) :target "_blank" :style (str "margin-left:5px;")}
-   (str (:url tweet))]
-  [:button.btn.btn-small.save.pull-right {:href "#"}
-   [:i.icon-bookmark-empty {:style "padding-right:3px;"}] "save"])
-
 (defn render-url
   "Render the url part of the tweet including the summary modal"
   [tweet]
@@ -77,9 +59,13 @@
       [:a {:href (str "#" modal-id) :class "btn"
            :role "button" :data-id modal-id  :data-summarized "false"
            :data-toggle "modal"} "Summarize"]
+      [:a {:href (:url tweet) :target "_blank" :style (str "margin-left:5px;")}
+       (str (:url tweet))]
       (if (true? (:save tweet))
-        (render-saved-anchor tweet)
-        (render-anchor tweet))])])
+        [:button.btn.btn-small.save.pull-right.disabled {:href "#"}
+         [:i.icon-bookmark {:style "padding-right:3px;color:#4f9fcf;"}] "saved"]
+        [:button.btn.btn-small.save.pull-right {:href "#"}
+         [:i.icon-bookmark-empty {:style "padding-right:3px;"}] "save"])])])
 
 (defn render-tweet-row
   [tweet]

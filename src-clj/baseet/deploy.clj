@@ -14,6 +14,12 @@
    (System/getenv "ACCESS_TOKEN_KEY")
    (System/getenv "ACCESS_TOKEN_SECRET")])
 
+(defn get-pocket-cfg
+  "Get pocket params from environ variables"
+  []
+  {:consumer-key (System/getenv "POCKET_CONSUMER_KEY")
+   :access-token (System/getenv "POCKET_ACCESS_TOKEN")})
+
 (defn default-server-params []
   (->DefaultServerParams
     (System/getenv "PERSONA_HOSTNAME")
@@ -28,4 +34,5 @@
   (map->DefaultCfg {:server-params (default-server-params)
                     :db-params (default-db-params)
                     :twitter-params (->> (get-twitter-cfg)
-                                         (apply suweet/make-twitter-creds))}))
+                                         (apply suweet/make-twitter-creds))
+                    :pocket-params (get-pocket-cfg)}))

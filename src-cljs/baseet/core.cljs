@@ -81,6 +81,11 @@
         tweet (-> target .getResponseText)]
     (when tweet
       (dom/replace-contents! parent (t/html->nodes tweet))
+      ;(.log js/console (str (.-innerHTML (.-nextSibling (sel1 parent :a)))))
+      (.log js/console (js/jQuery
+                         (str "a[href='"
+                              (.-innerHTML (.-nextSibling (sel1 parent :a))) "']")))
+      (.tooltip (js/jQuery (str "a[href='" (.-innerHTML (.-nextSibling (sel1 parent :a))) "']")))
       (dom/listen! (sel1 parent :.check-box) :click handle-mark-tweet-state-click)
       (dom/listen! (sel1 parent :.modal-id) :click handle-summarize-click))))
 
@@ -151,6 +156,7 @@
     (.tooltip (js/jQuery (str ".btn.refresh")))
     (.tooltip (js/jQuery (str ".btn.page-read")))
     (.tooltip (js/jQuery (str ".btn.list-read")))
+    (.tooltip (js/jQuery (str ".tweet-url")))
     (doall
       (map #(dom/listen! % :click handle-mark-tweet-state-click) (sel :.check-box)))
     (doall

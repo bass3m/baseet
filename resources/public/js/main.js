@@ -28590,14 +28590,14 @@ goog.require("goog.events");
 goog.require("goog.net.XhrIo");
 baseet.core.log = function() {
   var log__delegate = function(more) {
-    var _STAR_print_fn_STAR_461901 = cljs.core._STAR_print_fn_STAR_;
+    var _STAR_print_fn_STAR_474520 = cljs.core._STAR_print_fn_STAR_;
     try {
-      cljs.core._STAR_print_fn_STAR_ = function(p1__461898_SHARP_) {
-        return console.log(p1__461898_SHARP_)
+      cljs.core._STAR_print_fn_STAR_ = function(p1__474517_SHARP_) {
+        return console.log(p1__474517_SHARP_)
       };
       return cljs.core.apply.call(null, cljs.core.pr, more)
     }finally {
-      cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_461901
+      cljs.core._STAR_print_fn_STAR_ = _STAR_print_fn_STAR_474520
     }
   };
   var log = function(var_args) {
@@ -28608,8 +28608,8 @@ baseet.core.log = function() {
     return log__delegate.call(this, more)
   };
   log.cljs$lang$maxFixedArity = 0;
-  log.cljs$lang$applyTo = function(arglist__461903) {
-    var more = cljs.core.seq(arglist__461903);
+  log.cljs$lang$applyTo = function(arglist__474522) {
+    var more = cljs.core.seq(arglist__474522);
     return log__delegate(more)
   };
   log.cljs$core$IFn$_invoke$arity$variadic = log__delegate;
@@ -28663,6 +28663,8 @@ baseet.core.handle_save_url_response = function handle_save_url_response(parent,
   var tweet = target.getResponseText();
   if(cljs.core.truth_(tweet)) {
     dommy.core.replace_contents_BANG_.call(null, parent, dommy.template.html__GT_nodes.call(null, tweet));
+    console.log(jQuery([cljs.core.str("a[href='"), cljs.core.str(dommy.utils.__GT_Array.call(null, dommy.template.__GT_node_like.call(null, parent).getElementsByTagName("a"))[0].nextSibling.innerHTML), cljs.core.str("']")].join("")));
+    jQuery([cljs.core.str("a[href='"), cljs.core.str(dommy.utils.__GT_Array.call(null, dommy.template.__GT_node_like.call(null, parent).getElementsByTagName("a"))[0].nextSibling.innerHTML), cljs.core.str("']")].join("")).tooltip();
     dommy.core.listen_BANG_.call(null, dommy.utils.__GT_Array.call(null, dommy.template.__GT_node_like.call(null, parent).getElementsByClassName("check-box"))[0], "\ufdd0:click", baseet.core.handle_mark_tweet_state_click);
     return dommy.core.listen_BANG_.call(null, dommy.utils.__GT_Array.call(null, dommy.template.__GT_node_like.call(null, parent).getElementsByClassName("modal-id"))[0], "\ufdd0:click", baseet.core.handle_summarize_click)
   }else {
@@ -28684,11 +28686,11 @@ baseet.core.handle_save_url_click = function handle_save_url_click(event) {
 };
 baseet.core.handle_page_read_response = function handle_page_read_response(_) {
   var tweet_hdrs = dommy.utils.__GT_Array.call(null, document.getElementsByClassName("tweet-hdr"));
-  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461904_SHARP_) {
-    if(cljs.core.truth_(dommy.attrs.attr.call(null, p1__461904_SHARP_, "\ufdd0:checked"))) {
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__474523_SHARP_) {
+    if(cljs.core.truth_(dommy.attrs.attr.call(null, p1__474523_SHARP_, "\ufdd0:checked"))) {
       return null
     }else {
-      return baseet.core.toggle_tweet_state.call(null, p1__461904_SHARP_.parentNode.parentNode.parentNode, _)
+      return baseet.core.toggle_tweet_state.call(null, p1__474523_SHARP_.parentNode.parentNode.parentNode, _)
     }
   }, tweet_hdrs))
 };
@@ -28728,14 +28730,15 @@ baseet.core.handle_tw_list_response = function handle_tw_list_response(event) {
   jQuery([cljs.core.str(".btn.refresh")].join("")).tooltip();
   jQuery([cljs.core.str(".btn.page-read")].join("")).tooltip();
   jQuery([cljs.core.str(".btn.list-read")].join("")).tooltip();
-  cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461905_SHARP_) {
-    return dommy.core.listen_BANG_.call(null, p1__461905_SHARP_, "\ufdd0:click", baseet.core.handle_mark_tweet_state_click)
+  jQuery([cljs.core.str(".tweet-url")].join("")).tooltip();
+  cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__474524_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__474524_SHARP_, "\ufdd0:click", baseet.core.handle_mark_tweet_state_click)
   }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("check-box"))));
-  cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461906_SHARP_) {
-    return dommy.core.listen_BANG_.call(null, p1__461906_SHARP_, "\ufdd0:click", baseet.core.handle_save_url_click)
+  cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__474525_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__474525_SHARP_, "\ufdd0:click", baseet.core.handle_save_url_click)
   }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("save"))));
-  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461907_SHARP_) {
-    return dommy.core.listen_BANG_.call(null, p1__461907_SHARP_, "\ufdd0:click", baseet.core.handle_summarize_click)
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__474526_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__474526_SHARP_, "\ufdd0:click", baseet.core.handle_summarize_click)
   }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("modal-id"))))
 };
 baseet.core.handle_pager_click = function handle_pager_click(event) {
@@ -28767,49 +28770,49 @@ baseet.core.handle_tw_list_click = function handle_tw_list_click(event) {
   var target = event.target;
   event.stopPropagation();
   event.preventDefault();
-  var seq__461912_461916 = cljs.core.seq.call(null, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("active")));
-  var chunk__461913_461917 = null;
-  var count__461914_461918 = 0;
-  var i__461915_461919 = 0;
+  var seq__474531_474535 = cljs.core.seq.call(null, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("active")));
+  var chunk__474532_474536 = null;
+  var count__474533_474537 = 0;
+  var i__474534_474538 = 0;
   while(true) {
-    if(i__461915_461919 < count__461914_461918) {
-      var act_461920 = cljs.core._nth.call(null, chunk__461913_461917, i__461915_461919);
-      dommy.core.remove_class_BANG_.call(null, act_461920, "\ufdd0:active");
-      var G__461921 = seq__461912_461916;
-      var G__461922 = chunk__461913_461917;
-      var G__461923 = count__461914_461918;
-      var G__461924 = i__461915_461919 + 1;
-      seq__461912_461916 = G__461921;
-      chunk__461913_461917 = G__461922;
-      count__461914_461918 = G__461923;
-      i__461915_461919 = G__461924;
+    if(i__474534_474538 < count__474533_474537) {
+      var act_474539 = cljs.core._nth.call(null, chunk__474532_474536, i__474534_474538);
+      dommy.core.remove_class_BANG_.call(null, act_474539, "\ufdd0:active");
+      var G__474540 = seq__474531_474535;
+      var G__474541 = chunk__474532_474536;
+      var G__474542 = count__474533_474537;
+      var G__474543 = i__474534_474538 + 1;
+      seq__474531_474535 = G__474540;
+      chunk__474532_474536 = G__474541;
+      count__474533_474537 = G__474542;
+      i__474534_474538 = G__474543;
       continue
     }else {
-      var temp__4092__auto___461925 = cljs.core.seq.call(null, seq__461912_461916);
-      if(temp__4092__auto___461925) {
-        var seq__461912_461926__$1 = temp__4092__auto___461925;
-        if(cljs.core.chunked_seq_QMARK_.call(null, seq__461912_461926__$1)) {
-          var c__2856__auto___461927 = cljs.core.chunk_first.call(null, seq__461912_461926__$1);
-          var G__461928 = cljs.core.chunk_rest.call(null, seq__461912_461926__$1);
-          var G__461929 = c__2856__auto___461927;
-          var G__461930 = cljs.core.count.call(null, c__2856__auto___461927);
-          var G__461931 = 0;
-          seq__461912_461916 = G__461928;
-          chunk__461913_461917 = G__461929;
-          count__461914_461918 = G__461930;
-          i__461915_461919 = G__461931;
+      var temp__4092__auto___474544 = cljs.core.seq.call(null, seq__474531_474535);
+      if(temp__4092__auto___474544) {
+        var seq__474531_474545__$1 = temp__4092__auto___474544;
+        if(cljs.core.chunked_seq_QMARK_.call(null, seq__474531_474545__$1)) {
+          var c__2856__auto___474546 = cljs.core.chunk_first.call(null, seq__474531_474545__$1);
+          var G__474547 = cljs.core.chunk_rest.call(null, seq__474531_474545__$1);
+          var G__474548 = c__2856__auto___474546;
+          var G__474549 = cljs.core.count.call(null, c__2856__auto___474546);
+          var G__474550 = 0;
+          seq__474531_474535 = G__474547;
+          chunk__474532_474536 = G__474548;
+          count__474533_474537 = G__474549;
+          i__474534_474538 = G__474550;
           continue
         }else {
-          var act_461932 = cljs.core.first.call(null, seq__461912_461926__$1);
-          dommy.core.remove_class_BANG_.call(null, act_461932, "\ufdd0:active");
-          var G__461933 = cljs.core.next.call(null, seq__461912_461926__$1);
-          var G__461934 = null;
-          var G__461935 = 0;
-          var G__461936 = 0;
-          seq__461912_461916 = G__461933;
-          chunk__461913_461917 = G__461934;
-          count__461914_461918 = G__461935;
-          i__461915_461919 = G__461936;
+          var act_474551 = cljs.core.first.call(null, seq__474531_474545__$1);
+          dommy.core.remove_class_BANG_.call(null, act_474551, "\ufdd0:active");
+          var G__474552 = cljs.core.next.call(null, seq__474531_474545__$1);
+          var G__474553 = null;
+          var G__474554 = 0;
+          var G__474555 = 0;
+          seq__474531_474535 = G__474552;
+          chunk__474532_474536 = G__474553;
+          count__474533_474537 = G__474554;
+          i__474534_474538 = G__474555;
           continue
         }
       }else {
@@ -28821,8 +28824,8 @@ baseet.core.handle_tw_list_click = function handle_tw_list_click(event) {
   return baseet.core.get_twitter_list.call(null, target)
 };
 baseet.core.handle_all_twitter_lists = function handle_all_twitter_lists(user) {
-  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__461937_SHARP_) {
-    return dommy.core.listen_BANG_.call(null, p1__461937_SHARP_, "\ufdd0:click", baseet.core.handle_tw_list_click)
+  return cljs.core.doall.call(null, cljs.core.map.call(null, function(p1__474556_SHARP_) {
+    return dommy.core.listen_BANG_.call(null, p1__474556_SHARP_, "\ufdd0:click", baseet.core.handle_tw_list_click)
   }, dommy.utils.__GT_Array.call(null, document.getElementsByClassName("tw-list"))))
 };
 baseet.core.main = function main() {

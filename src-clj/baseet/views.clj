@@ -42,10 +42,10 @@
   [tweet]
   (let [url (:url tweet)]
     (if (:excerpt tweet)
-      [:a {:href url :target "_blank" :style (str "margin-left:5px;")
-           :data-toggle "tooltip" :data-placement "top"
-           :data-original-title (:excerpt tweet)} url]
-      [:a {:href url :target "_blank" :style (str "margin-left:5px;")}
+      [:a.tweet-url {:href url :target "_blank" :style (str "margin-left:5px;")
+                     :data-toggle "tooltip" :data-placement "top"
+                     :data-original-title (:excerpt tweet)} url]
+      [:a.tweet-url {:href url :target "_blank" :style (str "margin-left:5px;")}
          url])))
 
 (defn render-save-button

@@ -37,11 +37,52 @@
     (include-js "/jquery/1.10.1/jquery.min.js")
     (include-js "/bootstrap/js/bootstrap.min.js")))
 
-(defn render-tweet
-  "Tweet template: includes tweet text, url, retweets, etc..
-  Modal consumes most of the markup"
+(defn render-saved-anchor
+  "For a saved tweet, use the excerpt as a tooltip"
   [tweet]
-  [:div.tweet
+  [:a {:href (:url tweet) :target "_blank" :style (str "margin-left:5px;")
+       :data-toggle "tooltip" :data-placement "bottom"
+       :data-original-title (str (:excerpt tweet))}
+   (str (:url tweet))]
+  [:button.btn.btn-small.save.pull-right.disabled {:href "#"}
+   [:i.icon-bookmark {:style "padding-right:3px;color:#4f9fcf;"}] "saved"])
+
+(defn render-anchor
+  "For a saved tweet, use the excerpt as a tooltip"
+  [tweet]
+  [:a {:href (:url tweet) :target "_blank" :style (str "margin-left:5px;")}
+   (str (:url tweet))]
+  [:button.btn.btn-small.save.pull-right {:href "#"}
+   [:i.icon-bookmark-empty {:style "padding-right:3px;"}] "save"])
+
+(defn render-url
+  "Render the url part of the tweet including the summary modal"
+  [tweet]
+  [:small
+   (let [modal-id (:_id tweet)]
+     [:div.modal-id
+      [:div {:id modal-id
+             :class "modal hide fade" :tabindex "-1"
+             :role "dialog" :aria-labelledby (str modal-id "Label")
+             :aria-hidden "true"}
+       [:div.modal-header
+        [:button.close {:type "button" :data-dismiss "modal" :aria-hidden "true"} "x"]
+        [:h4 {:id (str modal-id "Label")} (str "Retrieving summary for :")]
+        [:p (:url tweet)]]
+       [:div.modal-body
+        [:i.icon-spinner.icon-spin.icon-2x]
+        [:p "hardly working.."]]
+       [:div.modal-footer
+        [:button.btn.btn-small {:data-dismiss "modal" :aria-hidden "true"} "Close"]]]
+      [:a {:href (str "#" modal-id) :class "btn"
+           :role "button" :data-id modal-id  :data-summarized "false"
+           :data-toggle "modal"} "Summarize"]
+      (if (true? (:save tweet))
+        (render-saved-anchor tweet)
+        (render-anchor tweet))])])
+
+(defn render-tweet-row
+  [tweet]
    [:div.row-fluid
     [:div.span9.well.well-small
       [:div.span3
@@ -59,27 +100,14 @@
       [:div.span3.text-right [:em (utils/time-ago-in-words (:created-at tweet))]]
       [:p (str (first (:text tweet)))]
       (when (seq (:url tweet))
-        [:small
-         (let [modal-id (:_id tweet)]
-           [:div.modal-id
-           [:div {:id modal-id
-                  :class "modal hide fade" :tabindex "-1"
-                  :role "dialog" :aria-labelledby (str modal-id "Label")
-                  :aria-hidden "true"}
-            [:div.modal-header
-             [:button.close {:type "button" :data-dismiss "modal" :aria-hidden "true"} "x"]
-             [:h4 {:id (str modal-id "Label")} (str "Retrieving summary for :")]
-             [:p (:url tweet)]]
-            [:div.modal-body
-             [:i.icon-spinner.icon-spin.icon-2x]
-             [:p "hardly working.."]]
-            [:div.modal-footer
-             [:button.btn.btn-small {:data-dismiss "modal" :aria-hidden "true"} "Close"]]]
-           [:a {:href (str "#" modal-id) :class "btn"
-                :role "button" :data-id modal-id  :data-summarized "false"
-                :data-toggle "modal"} "Summarize"]
-           [:a {:href (:url tweet) :target "_blank" :style (str "margin-left:5px;")}
-            (str (:url tweet))]])])]]])
+        (render-url tweet))]]
+  )
+
+(defn render-tweet
+  "Tweet template: includes tweet text, url, retweets, etc..
+  Modal consumes most of the markup"
+  [tweet]
+  [:div.tweet (render-tweet-row tweet)])
 
 (defn pager-view
   [first-page tw-count tw-per-page]
@@ -132,10 +160,16 @@
   [req]
   req)
 
-;; for nor, not much
+;; for now, not much
 (defn mark-many
   [_]
   {:update "ok"})
+
+(defn save-tweet
+  [tweet]
+  (if tweet
+    (html (render-tweet-row tweet))
+    {:update "ok"}))
 
 (defn render-login
   "Display login page"

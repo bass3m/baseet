@@ -40,6 +40,26 @@
     (when (= "false" (attrs/attr target :data-summarized))
       (xhr/send url (partial handle-summary-response tweet-id) "GET"))))
 
+(defn get-unread-count []
+  (-> js/document
+      (.getElementsByClassName "unread-count")
+      (.item 0)))
+
+(defn mark-tweet-unread
+  [parent checkbox]
+  (let [unread (get-unread-count)]
+    (dom/toggle-class! parent "muted")
+    (attrs/remove-attr! checkbox :checked)
+    ;; TODO look into whether this is a cljs bug ?
+    (dom/set-html! unread (inc (js/parseInt (.-innerHTML unread))))))
+
+(defn mark-tweet-read
+  [parent checkbox]
+  (let [unread (get-unread-count)]
+    (dom/add-class! parent "muted")
+    (attrs/set-attr! checkbox :checked "checked")
+    (dom/set-html! unread (dec (.-innerHTML unread)))))
+
 (defn toggle-tweet-state
   "Handle response for marking tweet as read.
   Update the unread count and mute text accordingly
@@ -48,19 +68,12 @@
   (let [unread (-> js/document
                    (.getElementsByClassName "unread-count")
                    (.item 0))
-        checkbox (-> parent .-firstChild .-firstChild .-firstChild)]
+        checkbox (sel1 parent :.tweet-hdr)]
     ;; decrement the total unread count
     ;; toggle the muted class
     (if (attrs/has-class? parent "muted")
-      (do
-        (dom/toggle-class! parent "muted")
-        (attrs/remove-attr! checkbox :checked)
-        ;; TODO look into whether this is a cljs bug ?
-        (dom/set-html! unread (inc (js/parseInt (.-innerHTML unread)))))
-      (do
-        (dom/add-class! parent "muted")
-        (attrs/set-attr! checkbox :checked "checked")
-        (dom/set-html! unread (dec (.-innerHTML unread)))))))
+      (mark-tweet-unread parent checkbox)
+      (mark-tweet-read parent checkbox))))
 
 (defn handle-mark-tweet-state-click
   "Click handler for a request to summarize a link.
@@ -81,13 +94,10 @@
         tweet (-> target .getResponseText)]
     (when tweet
       (dom/replace-contents! parent (t/html->nodes tweet))
-      ;(.log js/console (str (.-innerHTML (.-nextSibling (sel1 parent :a)))))
-      (.log js/console (js/jQuery
-                         (str "a[href='"
-                              (.-innerHTML (.-nextSibling (sel1 parent :a))) "']")))
       (.tooltip (js/jQuery (str "a[href='" (.-innerHTML (.-nextSibling (sel1 parent :a))) "']")))
       (dom/listen! (sel1 parent :.check-box) :click handle-mark-tweet-state-click)
-      (dom/listen! (sel1 parent :.modal-id) :click handle-summarize-click))))
+      (dom/listen! (sel1 parent :.modal-id) :click handle-summarize-click)
+      (mark-tweet-read parent (sel1 parent :.tweet-hdr)))))
 
 (defn handle-save-url-click
   "Save url by sending request to server"

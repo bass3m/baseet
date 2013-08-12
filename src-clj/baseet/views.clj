@@ -100,8 +100,7 @@
       [:div.span3.text-right [:em (utils/time-ago-in-words (:created-at tweet))]]
       [:p (str (first (:text tweet)))]
       (when (seq (:url tweet))
-        (render-url tweet))]]
-  )
+        (render-url tweet))]])
 
 (defn render-tweet
   "Tweet template: includes tweet text, url, retweets, etc..

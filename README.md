@@ -1,7 +1,7 @@
 #### Baseet
 ---
 ##### What is it ?
-Baseet is a web app built to utilize my other library **suweet**. It displays my twitter lists and highest scoring tweets from said lists. Also allows me to view a text summary of a url embedded in a tweet.
+Baseet is a web app built to utilize my other library **suweet**. It displays my twitter lists and highest scoring tweets from said lists. Also allows me to view a text summary of a url embedded in a tweet and save the url to read-it-later services.
 
 The app is my first attempt at using clojurescript, as well as clojure's web stack. Also my first time playing with couchDB. It's been a blast so far.
 
@@ -21,8 +21,8 @@ Suweet, uses **Apache Tika**, **Open NLP**, **Snowball Stemmer** and **Luhn's al
 
 More on suweet on github: [Suweet](https://github.com/bass3m/suweet "Suweet on gitbug").
 #### Todo:
-- Add ability to mark tweet as read/unread.
-- mark list as read
-- refresh tweets
+- ~~Add ability to mark tweet as read/unread.~~ Done.
+- ~~mark list as read~~ Done.
+- ~~refresh tweets~~ Done.
 - I want to play around with couchDB's changes API
-- Use [friend](https://github.com/cemerick/friend)
+- ~~Use [friend](https://github.com/cemerick/friend)~~ Used [lib-noir](https://github.com/noir-clojure/lib-noir) instead.

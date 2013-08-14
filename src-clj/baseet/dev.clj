@@ -35,4 +35,5 @@
                                                 :access-token-key
                                                 :access-token-secret))
                                          (apply suweet/make-twitter-creds))
-                    :pocket-params (get-cfg :pocket-cfg)}))
+                    :pocket-params (get-cfg :pocket-cfg)
+                    :alchemy-params (get-cfg :alchemy-cfg)}))

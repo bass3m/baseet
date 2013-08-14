@@ -51,18 +51,20 @@
   [request]
   (session/clear!))
 
-(defn save-tweet
-  "Save tweet url"
-  [url tw-id ctx]
-  (let [body (json/write-str {:url url
-                              :tweet_id (str tw-id)
-                              :access_token (-> ctx :pocket-params :access-token)
-                              :consumer_key (-> ctx :pocket-params :consumer-key)})]
+(defn save-to-service
+  "Save url to a read-it-later service"
+  [url tw-id ctx tags]
+  (let [body (cond-> {:url url
+                      :tweet_id (str tw-id)
+                      :access_token (-> ctx :pocket-params :access-token)
+                      :consumer_key (-> ctx :pocket-params :consumer-key)}
+               tags (assoc :tags (clojure.string/join \, tags)))
+        json-body (json/write-str body)]
     (when-let [save-resp (try
                            (http/post "https://getpocket.com/v3/add"
                                       {:headers {"Content-Type" "application/json;charset=utf-8"
                                                  "X-Accept" "application/json"}
-                                       :body body})
+                                       :body json-body})
                            (catch Exception e nil))]
       (let [saved-item (-> save-resp :body (json/read-str :key-fn keyword) :item)]
         {:item-id (:item_id saved-item)
@@ -71,7 +73,24 @@
          :url (or (:resolved_url saved-item)
                   (:normal_url saved-item))}))))
 
-(defn mark-list-read [list-id])
+(defn get-text-concepts
+  "Get tags for the url, only keep tags with relevance higher than 0.85
+  return a vector containg the tags"
+  [url ctx]
+  (when-let [text-concepts (try
+                             (http/post
+                               "http://access.alchemyapi.com/calls/url/URLGetRankedConcepts"
+                               {:form-params {:apikey (-> ctx :alchemy-params :api-key)
+                                              :outputMode (-> ctx :alchemy-params :output-mode)
+                                              :url url
+                                              :linkedData (-> ctx :alchemy-params :linked-data)}})
+                             (catch Exception e nil))]
+    (let [concepts (-> text-concepts :body (json/read-str :key-fn keyword) :concepts)]
+      (mapv :text (filter (comp (partial < 0.85) #(Double. %) :relevance) concepts)))))
 
-(defn mark-all-read [])
-
+(defn save-tweet
+  "Save tweet url"
+  [url tw-id ctx]
+  (->> ctx
+       (get-text-concepts url)
+       (save-to-service url tw-id ctx)))

@@ -25,6 +25,13 @@
     (System/getenv "PERSONA_HOSTNAME")
     (Integer. (System/getenv "PORT"))))
 
+(defn get-alchemy-cfg
+  "get the alchemy api configs"
+  []
+  {:api-key (System/getenv "ALCHEMY_API_KEY")
+   :output-mode "json"
+   :linked-data 0})
+
 (defn default-db-params []
   (map->DefaultDbParams {:db-type :couch
                          :db-name (System/getenv "CLOUDANT_URL")
@@ -35,4 +42,5 @@
                     :db-params (default-db-params)
                     :twitter-params (->> (get-twitter-cfg)
                                          (apply suweet/make-twitter-creds))
-                    :pocket-params (get-pocket-cfg)}))
+                    :pocket-params (get-pocket-cfg)
+                    :alchemy-params (get-alchemy-cfg)}))

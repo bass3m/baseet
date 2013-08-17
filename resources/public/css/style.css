@@ -223,3 +223,8 @@ input::-moz-focus-inner
   padding: 0px 3px;
   margin-top: 3px;
 }
+
+.well-small:hover {
+  background-color: #ddd;
+}
+

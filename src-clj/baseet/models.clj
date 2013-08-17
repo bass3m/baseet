@@ -65,6 +65,7 @@
         (db/update-document db-name
                             (as-> tweet _
                               (assoc _ :save true)
+                              (assoc _ :unread false)
                               (assoc _ :url (:url saved-item))
                               (assoc _ :pocket-item-id (:item-id saved-item))
                               (assoc _ :excerpt (:excerpt saved-item))

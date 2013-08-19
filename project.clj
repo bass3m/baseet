@@ -19,8 +19,8 @@
                  [compojure "1.1.5"]
                  [hiccup "1.0.4"]
                  [prismatic/dommy "0.1.1"]
-                 [suweet "0.1.5-SNAPSHOT"]
-                 [baseet-twdb "0.1.1-SNAPSHOT"]]
+                 [suweet "0.1.6-SNAPSHOT"]
+                 [baseet-twdb "0.1.2-SNAPSHOT"]]
   :plugins  [[lein-cljsbuild "0.3.2"]]
   :cljsbuild  {
     :builds [{
